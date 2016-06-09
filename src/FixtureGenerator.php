@@ -222,6 +222,9 @@ class FixtureGenerator
             } elseif ($fixtureData = $this->reader->getPropertyAnnotation($property, FixtureData::class)) {
                 /** @var FixtureData $fixtureData */
                 $value = $fixtureData->value;
+                if (is_null($value)) {
+                    $value = self::SKIPVALUE;
+                }
             } else {
                 // Avoid setting unnecessary data
                 if (is_null($value) || is_bool($value) || is_object($value)) {
