@@ -26,12 +26,15 @@ class PhoneNumberProvider
     }
     
     // Converts a PhoneNumber object into a fixture-friendly format
-    public function fixture(PhoneNumber $phoneNumber) {
+    public static function fixture(PhoneNumber $phoneNumber) {
         $number = PhoneNumberUtil::getInstance()->format($phoneNumber, PhoneNumberFormat::E164);
         return "<phoneNumber('$number')>";
     }
 }
 ```
+
+**Note**: Typically methods in type providers will be static, but they don't have to be.
+If the method isn't static then you can use dependency injection just like with any other service.
 
 Then declare it as a service with the `trappar_alice_generator.faker.provider` and `hautelook_alice.faker.provider` tags:
 

@@ -4,7 +4,7 @@ namespace Trappar\AliceGeneratorBundle\DataFixtures\Faker\Provider;
 
 class DateTimeProvider
 {
-    public function fixture(\DateTime $dateTime)
+    public static function fixture(\DateTime $dateTime)
     {
         $dateTime = "<(new \\DateTime('{$dateTime->format('Y-m-d H:i:s')}'))>";
 
