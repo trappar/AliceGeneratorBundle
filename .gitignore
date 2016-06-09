@@ -4,3 +4,4 @@ tests/SymfonyApp/cache
 tests/SymfonyApp/logs
 coverage.xml
 phpunit.xml
+generated.yml
