@@ -94,7 +94,7 @@ abstract class FixtureGeneratorTestCase extends KernelTestCase
 
     protected function writeYaml($yml)
     {
-        $fixturePath = __DIR__ . '/SymfonyApp/TestBundle/DataFixtures/ORM';
+        $fixturePath = __DIR__ . '/../SymfonyApp/TestBundle/DataFixtures/ORM';
 
         $fs = new Filesystem();
         $fs->mkdir($fixturePath);
