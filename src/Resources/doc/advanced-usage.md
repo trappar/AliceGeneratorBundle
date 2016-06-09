@@ -59,7 +59,7 @@ class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
 For information about the `configure` method reference ["How to Create a Console Command"](http://symfony.com/doc/current/cookbook/console/console_command.html)
 
 You may also override the `getFixtureGenerationContext` method in your console command to specify options for how
-fixtures will be generated. See (#setting-options-for-fixture-generation)
+fixtures will be generated. See [Fixture Generation Contexts](#setting-options-for-fixture-generation)
 
 ## Fixture Generation Contexts
 
@@ -115,5 +115,5 @@ $namer->setNamespaceSeparator('-');
 $fixtureGenerator->generateYaml($post, FixtureGenerationContext::create()->setReferenceNamer($namer));
 ```
 
-Previous chapter: [Basic usage](../../../README.md#basic-usage)
+Previous chapter: [Basic usage](../../../README.md#basic-usage)<br />
 Next chapter: [Custom Type Providers](type-providers.md)

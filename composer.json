@@ -1,6 +1,6 @@
 {
     "name": "trappar/alice-generator-bundle",
-    "description": "Symfony2 Bundle to generate Alice fixtures from existing Doctrine entities.",
+    "description": "Symfony2 bundle to generate Alice fixtures from existing Doctrine entities",
     "keywords": ["Symfony", "Fixture", "ORM", "Alice"],
     "type": "symfony-bundle",
     "license": "MIT",

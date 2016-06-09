@@ -17,7 +17,7 @@ This opens up a whole new, much faster way to get your test data established... 
 
 1. [Install](#installation)
 2. [Basic usage](#basic-usage)
-3. [Advanced Usage](src/Resources/doc/advanced-usage.md#enabling-databases)
+3. [Advanced Usage](src/Resources/doc/advanced-usage.md)
     1. [Custom Fixture Generation Console Command](src/Resources/doc/advanced-usage.md#custom-fixture-generation-console-command)
     2. [Fixture Generation Contexts](src/Resources/doc/advanced-usage.md#fixture-generation-contexts)
 4. [Custom Type Providers](src/Resources/doc/type-providers.md)
