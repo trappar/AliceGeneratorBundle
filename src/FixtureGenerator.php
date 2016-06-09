@@ -280,7 +280,7 @@ class FixtureGenerator
                 $item = '$value';
             }
             if (is_string($item)) {
-                return "'$item'";
+                return '"'.$item.'"';
             } elseif (is_bool($item)) {
                 return ($item) ? 'true' : 'false';
             }
