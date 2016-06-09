@@ -52,5 +52,5 @@ services:
 That's it! Now any time a PhoneNumber object is encountered in one of your Entities it will be handled nicely when generating fixtures, and
 the Faker provider will handle converting the fixture back into the proper object!
 
-Previous chapter: [Advanced Usage](advanced-usage.md)<br />
+Previous chapter: [Annotations](annotations.md)<br />
 Next chapter: [Resources](../../../README.md#resources)

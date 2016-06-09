@@ -74,13 +74,14 @@ Use your UI to create your data, let this bundle do the hard part, and then twea
 3. [Advanced Usage](src/Resources/doc/advanced-usage.md)
     1. [Custom Fixture Generation Console Command](src/Resources/doc/advanced-usage.md#custom-fixture-generation-console-command)
     2. [Fixture Generation Contexts](src/Resources/doc/advanced-usage.md#fixture-generation-contexts)
-4. [Custom Type Providers](src/Resources/doc/type-providers.md)
+4. [Annotations](src/Resources/doc/annotations.md)
+5. [Custom Type Providers](src/Resources/doc/type-providers.md)
 5. [Resources](#resources)
 
 ## Installation
 
-This bundle is intended to be used alongside the [AliceBundle](https://github.com/hautelook/AliceBundle). You'll need to
-use either that or some
+This bundle is intended to be used alongside the [AliceBundle](https://github.com/hautelook/AliceBundle). You should have
+a solid understanding of how that ecosystem works before installing this bundle.
 
 You can use [Composer](https://getcomposer.org/) to install the bundle to your project:
 

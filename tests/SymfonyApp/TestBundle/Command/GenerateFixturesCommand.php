@@ -5,6 +5,7 @@ namespace Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Trappar\AliceGeneratorBundle\Command\AbstractFixtureGeneratorCommand;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\Post;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
 
 class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
@@ -22,9 +23,9 @@ class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
      */
     public function getEntities(InputInterface $input, OutputInterface $output)
     {
-        $user = new User();
-        $user->setUsername('testUser');
-        return $user;
+        $post = new Post();
+        $post->setTitle('test');
+        return $post;
     }
 
     /**

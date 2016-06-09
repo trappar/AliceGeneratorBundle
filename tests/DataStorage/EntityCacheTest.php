@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\DataStorage;
 
-use phpunit\framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Trappar\AliceGeneratorBundle\DataStorage\EntityCache;
 
 class EntityCacheTest extends TestCase
@@ -13,21 +13,21 @@ class EntityCacheTest extends TestCase
 
         $testData = new \stdClass();
 
-        $this->assertEquals(
+        $this->assertSame(
             EntityCache::OBJECT_NOT_FOUND,
             $entityCache->find($testData)
         );
         
         $entityCache->add($testData);
 
-        $this->assertEquals(
-            '1',
+        $this->assertSame(
+            1,
             $entityCache->find($testData)
         );
 
         $entityCache->skip($testData);
 
-        $this->assertEquals(
+        $this->assertSame(
             EntityCache::OBJECT_SKIPPED,
             $entityCache->find($testData)
         );

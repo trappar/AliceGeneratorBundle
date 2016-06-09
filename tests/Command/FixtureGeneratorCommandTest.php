@@ -3,7 +3,7 @@
 namespace Trappar\AliceGeneratorBundle\Tests\Command;
 
 use Symfony\Component\Filesystem\Filesystem;
-use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\Post;
 use Trappar\AliceGeneratorBundle\Tests\Test\FixtureGeneratorTestCase;
 
 class FixtureGeneratorCommandTest extends FixtureGeneratorTestCase
@@ -18,10 +18,10 @@ class FixtureGeneratorCommandTest extends FixtureGeneratorTestCase
         $this->runConsole('generate:fixtures');
 
         $this->assertFileExists($generateFileLocation);
-        
+
         $parsed = $this->parseYaml(file_get_contents($generateFileLocation));
-        
-        $this->assertEquals(1, count($parsed));
-        $this->assertEquals(1, count($parsed[User::class]));
+
+        $this->assertSame(1, count($parsed));
+        $this->assertSame(1, count($parsed[Post::class]));
     }
 }

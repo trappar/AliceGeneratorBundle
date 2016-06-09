@@ -23,12 +23,12 @@ class DateTimeProviderTest extends KernelTestCase
      */
     public function testFixture()
     {
-        $this->assertEquals(
+        $this->assertSame(
             '<(new \\DateTime(\'2000-12-26\'))>',
             $this->dateTimeProvider->fixture(new \DateTime('Dec 26 2000'))
         );
         
-        $this->assertEquals(
+        $this->assertSame(
             '<(new \\DateTime(\'2016-06-07 02:07:00\'))>',
             $this->dateTimeProvider->fixture(new \DateTime('Jun 7 2016 2:07'))
         );

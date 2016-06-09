@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests;
 
-use phpunit\framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Trappar\AliceGeneratorBundle\FixtureGenerationContext;
 use Trappar\AliceGeneratorBundle\ReferenceNamer\NamespaceNamer;
 
@@ -16,7 +16,7 @@ class FixtureGenerationContextTest extends TestCase
             ->addEntityConstraint($this);
         
         $this->assertInstanceOf(NamespaceNamer::class, $context->getReferenceNamer());
-        $this->assertEquals(0, $context->getMaximumRecursion());
+        $this->assertSame(0, $context->getMaximumRecursion());
         $this->assertTrue($context->getEntityConstraints()->checkValid($this));
     }
 }

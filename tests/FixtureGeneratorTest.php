@@ -36,6 +36,7 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
             User::class => [
                 'User-1' => [
                     'username' => $user->getUsername(),
+                    'password' => 'test',
                     'created'  => $this->datetimeProvider->fixture($user->getCreated()),
                     'roles'    => [ 'ROLE_ADMIN' ]
                 ]
@@ -64,6 +65,7 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
     {
         $user = new User();
         $user->setUsername('testUser');
+        $user->setPassword('test');
         $user->setRoles(['ROLE_ADMIN']);
 
         $post1 = new Post();

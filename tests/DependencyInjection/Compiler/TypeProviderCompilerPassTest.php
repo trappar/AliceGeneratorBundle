@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\DependencyInjection\Compiler;
 
-use phpunit\framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

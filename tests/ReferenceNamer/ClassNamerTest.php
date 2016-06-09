@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\ReferenceNamer;
 
-use phpunit\framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Trappar\AliceGeneratorBundle\ReferenceNamer\ClassNamer;
 
 class ClassNamerTest extends TestCase
@@ -11,7 +11,7 @@ class ClassNamerTest extends TestCase
     {
         $classNamer = new ClassNamer();
         
-        $this->assertEquals(
+        $this->assertSame(
             'ClassNamerTest-',
             $classNamer->createPrefix($this)
         );

@@ -2,6 +2,8 @@
 
 namespace Trappar\AliceGeneratorBundle;
 
+use Doctrine\Common\Annotations\AnnotationException;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
@@ -9,6 +11,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Symfony\Component\Yaml\Yaml;
+use Trappar\AliceGeneratorBundle\Annotation\FixtureData;
+use Trappar\AliceGeneratorBundle\Annotation\FixtureFaker;
 use Trappar\AliceGeneratorBundle\DataStorage\EntityCache;
 
 class FixtureGenerator
@@ -41,10 +45,15 @@ class FixtureGenerator
      * @var EntityCache
      */
     private $entityCache;
+    /**
+     * @var Reader
+     */
+    private $reader;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, Reader $reader)
     {
         $this->metadataFactory = $em->getMetadataFactory();
+        $this->reader          = $reader;
     }
 
     public function generateYaml($value, $fixtureGenerationContext = null)
@@ -87,15 +96,15 @@ class FixtureGenerator
             if (!$this->fixtureGenerationContext->getEntityConstraints()->checkValid($object)) {
                 return self::SKIPVALUE;
             }
-            
-            $result = $this->entityCache->find($object);
+
+            $result          = $this->entityCache->find($object);
             $referencePrefix = $this->fixtureGenerationContext->getReferenceNamer()->createPrefix($object);
 
             switch ($result) {
                 case EntityCache::OBJECT_NOT_FOUND:
                     if ($this->recursionDepth <= $this->fixtureGenerationContext->getMaximumRecursion()) {
-                        $key             = $this->entityCache->add($object);
-                        $reference       = $referencePrefix . $key;
+                        $key       = $this->entityCache->add($object);
+                        $reference = $referencePrefix . $key;
 
                         $objectAdded = $this->handleEntity($object, $reference);
 
@@ -207,18 +216,26 @@ class FixtureGenerator
             $value        = $property->getValue($object);
             $initialValue = $property->getValue($newObject);
 
-            // Avoid setting unnecessary data
-            if (is_null($value) || is_bool($value) || is_object($value)) {
-                if ($value === $initialValue) {
-                    continue;
-                }
+            if ($fixtureFaker = $this->reader->getPropertyAnnotation($property, FixtureFaker::class)) {
+                /** @var FixtureFaker $fixtureFaker */
+                $value = $this->createValueFromFixtureFakerAnnotation($fixtureFaker, $class, $propName, $value);
+            } elseif ($fixtureData = $this->reader->getPropertyAnnotation($property, FixtureData::class)) {
+                /** @var FixtureData $fixtureData */
+                $value = $fixtureData->value;
             } else {
-                if ($value == $initialValue) {
-                    continue;
+                // Avoid setting unnecessary data
+                if (is_null($value) || is_bool($value) || is_object($value)) {
+                    if ($value === $initialValue) {
+                        continue;
+                    }
+                } else {
+                    if ($value == $initialValue) {
+                        continue;
+                    }
                 }
+                
+                $value = $this->handleUnknownType($value);
             }
-
-            $value = $this->handleUnknownType($value);
 
             // No need to make references for non-owning side associations
             if (isset($associations[$propName])) {
@@ -243,6 +260,33 @@ class FixtureGenerator
 
             return true;
         }
+    }
+
+    protected function createValueFromFixtureFakerAnnotation(FixtureFaker $annotation, $class, $propName, $value)
+    {
+        $arguments = $annotation->arguments;
+
+        if (!is_array($arguments)) {
+            throw new AnnotationException("FixtureFaker annotation - arguments must be array on: $class->$propName");
+        }
+
+        $arguments = array_map(function ($item) use ($value) {
+            if ($item === '$value') {
+                $item = $value;
+            } elseif ($item === '\$value') {
+                $item = '$value';
+            }
+            if (is_string($item)) {
+                return "'$item'";
+            } elseif (is_bool($item)) {
+                return ($item) ? 'true' : 'false';
+            }
+
+            return $item;
+        }, $arguments);
+        $arguments = implode($arguments, ', ');
+        
+        return "<{$annotation->value}($arguments)>";
     }
 
     protected function isObjectMapped($object)

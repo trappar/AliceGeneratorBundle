@@ -4,6 +4,7 @@ namespace Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Trappar\AliceGeneratorBundle\Annotation\FixtureData;
 
 /**
  * User
@@ -28,6 +29,14 @@ class User
      * @ORM\Column(name="username", type="string", length=100, unique=true)
      */
     private $username;
+
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="password", type="string")
+     * @FixtureData("test")
+     */
+    private $password;
 
     /**
      * @var string
@@ -95,6 +104,25 @@ class User
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     * @return User
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     /**

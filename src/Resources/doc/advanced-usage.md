@@ -140,4 +140,4 @@ $fixtureGenerator->generateYaml($post, FixtureGenerationContext::create()->setRe
 ```
 
 Previous chapter: [Basic usage](../../../README.md#basic-usage)<br />
-Next chapter: [Custom Type Providers](type-providers.md)
+Next chapter: [Annotations](annotations.md)

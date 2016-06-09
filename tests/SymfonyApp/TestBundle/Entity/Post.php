@@ -3,6 +3,7 @@
 namespace Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Trappar\AliceGeneratorBundle\Annotation\FixtureFaker;
 
 /**
  * Post
@@ -32,6 +33,7 @@ class Post
      * @var string
      *
      * @ORM\Column(name="bodya", type="text")
+     * @FixtureFaker("paragraphs", arguments={3, true})
      */
     private $body;
 

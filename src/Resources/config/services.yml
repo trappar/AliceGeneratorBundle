@@ -1,7 +1,9 @@
 services:
     trappar_alice_generator.fixture_generator:
         class: Trappar\AliceGeneratorBundle\FixtureGenerator
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@annotation_reader"
 
     trappar_alice_generator.command.fixture_generator:
         abstract: true

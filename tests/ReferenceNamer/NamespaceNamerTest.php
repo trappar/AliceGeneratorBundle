@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\ReferenceNamer;
 
-use phpunit\framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Trappar\AliceGeneratorBundle\ReferenceNamer\NamespaceNamer;
 
 class NamespaceNamerTest extends TestCase
@@ -11,21 +11,21 @@ class NamespaceNamerTest extends TestCase
     {
         $namer = new NamespaceNamer();
         
-        $this->assertEquals(
+        $this->assertSame(
             'TrapparAliceGeneratorBundleTestsReferenceNamerNamespaceNamerTest-',
             $namer->createPrefix($this)
         );
         
         $namer->setIgnoredNamespaces(['Trappar', 'AliceGeneratorBundle']);
 
-        $this->assertEquals(
+        $this->assertSame(
             'TestsReferenceNamerNamespaceNamerTest-',
             $namer->createPrefix($this)
         );
         
         $namer->setNamespaceSeparator('-');
 
-        $this->assertEquals(
+        $this->assertSame(
             'Tests-ReferenceNamerNamespaceNamerTest-',
             $namer->createPrefix($this)
         );

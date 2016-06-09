@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\DependencyInjection;
 
-use phpunit\framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;

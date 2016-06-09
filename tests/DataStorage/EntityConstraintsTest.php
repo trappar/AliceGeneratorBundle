@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\DataStorage;
 
-use phpunit\framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Trappar\AliceGeneratorBundle\DataStorage\EntityConstraints;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
 

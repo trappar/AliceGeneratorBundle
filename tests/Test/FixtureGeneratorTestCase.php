@@ -76,7 +76,7 @@ abstract class FixtureGeneratorTestCase extends KernelTestCase
 
     protected function assertYamlEquals($expected, $yaml)
     {
-        $this->assertEquals($expected, $this->parseYaml($yaml));
+        $this->assertSame($expected, $this->parseYaml($yaml));
     }
 
     protected function assertYamlGeneratesEqualEntity($entity, $yaml)
@@ -88,8 +88,8 @@ abstract class FixtureGeneratorTestCase extends KernelTestCase
         $this->runConsole('hautelook_alice:doctrine:fixtures:load', ['-n' => true, '--purge-with-truncate' => true]);
 
         $fixtureGeneratedEntity = $this->em->find(get_class($entity), 1);
-
-        $this->assertEquals($entity, $fixtureGeneratedEntity);
+        
+        $this->assertSame($entity, $fixtureGeneratedEntity);
     }
 
     protected function writeYaml($yml)
