@@ -2,7 +2,7 @@
 
 ## Custom Fixture Generation Console Command
 
-Start by creating the command class, for example:
+### Start by creating the command class:
 
 ```php
 <?php
@@ -56,12 +56,28 @@ class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
 }
 ```
 
-For information about the `configure` method reference ["How to Create a Console Command"](http://symfony.com/doc/current/cookbook/console/console_command.html)
+**Notes:**
 
-You may also override the `getFixtureGenerationContext` method in your console command to specify options for how
+* For information about the `configure` method reference ["How to Create a Console Command"](http://symfony.com/doc/current/cookbook/console/console_command.html)
+* You may also override the `getFixtureGenerationContext` method in your console command to specify options for how
 fixtures will be generated. See [Fixture Generation Contexts](#setting-options-for-fixture-generation)
 
-## Fixture Generation Contexts
+#### Now register the command as a service
+ 
+```yaml
+# app/config/services.yml
+
+services:
+    command.generate_fixtures:
+        class: AppBundle\Command\GenerateFixturesCommand
+        parent: trappar_alice_generator.command.fixture_generator
+        tags: 
+            - { name: console.command }
+```
+
+**Important: Don't forget the parent line!**
+
+### Fixture Generation Contexts
 
 Since generating fixtures involves recursing through entities, you will often find yourself in a situation where generating
 fixtures yields quite a lot more information than you would like - this is just the nature of recursion! To control this
