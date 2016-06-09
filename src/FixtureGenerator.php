@@ -100,7 +100,7 @@ class FixtureGenerator
                         $objectAdded = $this->handleEntity($object, $reference);
 
                         if ($objectAdded) {
-                            return $reference;
+                            return '@' . $reference;
                         } else {
                             $this->entityCache->skip($object);
 
