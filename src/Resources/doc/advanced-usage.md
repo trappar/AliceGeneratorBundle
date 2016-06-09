@@ -85,7 +85,7 @@ services:
 
 **Important: Don't forget the parent line!**
 
-### Fixture Generation Contexts
+## Fixture Generation Contexts
 
 Since generating fixtures involves recursing through entities, you will often find yourself in a situation where generating
 fixtures yields quite a lot more information than you would like - this is just the nature of recursion! To control this

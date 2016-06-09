@@ -6,7 +6,7 @@ A [Symfony](http://symfony.com) bundle to recursively convert existing [Doctrine
 
 ## Why?
 
-Sometimes you might find yourself working on a large project with many tables where there are no existing fixtures.
+Sometimes you find yourself working on a large project with many tables where there are no existing fixtures.
 In this case even though Alice makes fixtures much easier to write, that process can still be extremely time consuming.
 
 This bundle proposes an alternate starting point - *automatically generate fixtures from your existing data.*
@@ -48,7 +48,7 @@ class User
 }
 ```
 
-Turn that directly into...
+This bundle let's you turn that directly into...
 
 ```yaml
 AppBundle\Entity\Post:
@@ -65,7 +65,7 @@ AppBundle\Entity\User:
         username: testUser
 ```
 
-Use your UI to create your data, let this bundle do the hard part, and then tweak until you've got the perfect fixtures :)
+Use your UI to create your data, let this bundle do the hard part, and then tweak until you've got perfect fixtures :)
 
 ## Documentation
 
@@ -111,7 +111,8 @@ public function registerBundles()
 
 There are two primary ways to use this bundle.
 
-1. Use the `trappar_alice_generator.fixture_generator` service's `generateYaml` method directly.
+1. Use the `trappar_alice_generator.fixture_generator` service's `generateYaml` method directly. You can pass a single entity or an
+array/Collection of any number of entities to this and it will produce a string of yaml fixtures.
 2. Create a console command to handle fixture generation.
 
 See more in [Advanced Usage](src/Resources/doc/advanced-usage.md)
