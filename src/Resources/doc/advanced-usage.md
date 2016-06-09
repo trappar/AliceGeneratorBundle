@@ -2,7 +2,7 @@
 
 ## Custom Fixture Generation Console Command
 
-### Start by creating the command class:
+#### Start by creating the command class:
 
 ```php
 <?php
