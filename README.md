@@ -65,7 +65,7 @@ AppBundle\Entity\User:
         username: testUser
 ```
 
-Stop writing fixtures by hand. Use your UI to create your data and let this bundle do the rest :)
+Use your UI to create your data, let this bundle do the hard part, and then tweak until you've got the perfect fixtures :)
 
 ## Documentation
 
