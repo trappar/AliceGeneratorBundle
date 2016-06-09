@@ -32,7 +32,7 @@ abstract class AbstractFixtureGeneratorCommand extends Command implements Fixtur
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filesystem = new Filesystem();
-        $entities = $this->getEntities($input);
+        $entities = $this->getEntities($input, $output);
         $context = $this->getFixtureGenerationContext();
         $outputLocation = $this->getOutputLocation();
         $outputDirectory = pathinfo($outputLocation, PATHINFO_DIRNAME);
