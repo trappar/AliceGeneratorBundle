@@ -2,6 +2,11 @@
 
 ## Custom Fixture Generation Console Command
 
+Setting up a custom fixture generation console command is a good way to store the logic of how you generate fixtures.
+To make it easier to write this command the class `AbstractFixtureGeneratorCommand` is included in this bundle which takes
+care of the bulk of writing a custom command. All you have to do is fill in your application specific parts.
+Do this setup process once and you'll have a tool you can tweak and use for the lifetime of your application.
+
 #### Start by creating the command class:
 
 ```php
@@ -61,6 +66,9 @@ class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
 * For information about the `configure` method reference ["How to Create a Console Command"](http://symfony.com/doc/current/cookbook/console/console_command.html)
 * You may also override the `getFixtureGenerationContext` method in your console command to specify options for how
 fixtures will be generated. See [Fixture Generation Contexts](#setting-options-for-fixture-generation)
+* `getEntries` will be called before `getFixtureGenerationContext`, so if you want to use some Input argument passed into
+ the command to determine what options are set in the `FixtureGenerationContext` just make a class property and create the
+ `FixtureGenerationContext` inside `getEntities`.
 
 #### Now register the command as a service
  
