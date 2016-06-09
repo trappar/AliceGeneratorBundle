@@ -1,0 +1,6 @@
+services:
+    test_bundle.command.generate_fixtures:
+        class: Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Command\GenerateFixturesCommand
+        parent: trappar_alice_generator.command.fixture_generator
+        tags:
+            - { name: console.command }

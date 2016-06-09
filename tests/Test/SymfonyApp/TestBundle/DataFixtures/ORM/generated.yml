@@ -1,0 +1,14 @@
+Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\Post:
+    Post-1:
+        title: 'How To Do Something'
+        body: 'Just do it!'
+        postedBy: '@User-1'
+    Post-2:
+        title: 'Web Development Made Easy'
+        body: 'Just do it!'
+        postedBy: '@User-1'
+Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User:
+    User-1:
+        username: testUser
+        created: '<(new \DateTime(''2016-06-08 16:55:47''))>'
+        roles: [ROLE_ADMIN]

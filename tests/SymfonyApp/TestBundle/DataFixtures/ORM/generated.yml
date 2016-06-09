@@ -1,0 +1,4 @@
+Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User:
+    User-1:
+        username: testUser
+        created: '<(new \DateTime(''2016-06-08 16:55:31''))>'

@@ -1,0 +1,28 @@
+imports:
+    - { resource: services.yml }
+
+framework:
+    secret: test
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+    form: ~
+    validation:
+        enabled: true
+        enable_annotations: true
+    session: ~
+    test: ~
+
+doctrine:
+    orm:
+        default_entity_manager: default
+        entity_managers:
+            default:
+                connection: default
+                mappings:
+                    TestBundle: ~
+    dbal:
+        connections:
+            default:
+                driver: pdo_sqlite
+                path: "%kernel.cache_dir%/db.sqlite"
+                charset: UTF8

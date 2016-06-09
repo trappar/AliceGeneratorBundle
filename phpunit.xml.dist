@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true"
+         bootstrap="tests/SymfonyApp/bootstrap.php"
+        >
+
+    <php>
+        <server name="KERNEL_DIR" value="tests/SymfonyApp" />
+    </php>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="true" />
+        <log type="coverage-clover" target="coverage.xml" />
+    </logging>
+
+    <testsuites>
+        <testsuite name="AliceGeneratorBundle Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./old</directory>
+                <directory>./vendor</directory>
+                <directory>./tests</directory>
+                <directory>./src/Resources</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+</phpunit>

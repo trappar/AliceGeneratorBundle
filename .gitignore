@@ -1,0 +1,6 @@
+vendor/*
+composer.lock
+tests/SymfonyApp/cache
+tests/SymfonyApp/logs
+coverage.xml
+phpunit.xml
