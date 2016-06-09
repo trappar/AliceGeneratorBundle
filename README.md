@@ -1,7 +1,7 @@
 AliceGeneratorBundle
 ===========
 
-A [Symfony](http://symfony.com) bundle to convert existing [Doctrine](http://doctrine-project.org) entities into
+A [Symfony](http://symfony.com) bundle to recursively convert existing [Doctrine](http://doctrine-project.org) entities into
 [Alice](https://github.com/nelmio/alice) Fixtures.
 
 ## Why?
@@ -12,6 +12,60 @@ In this case even though Alice makes fixtures much easier to write, that process
 This bundle proposes an alternate starting point - *automatically generate fixtures from your existing data.*
 
 This opens up a whole new, much faster way to get your test data established... just enter it in your user interface!
+
+## Example
+
+Let's say you have the following entities
+
+```php
+// AppBundle/Entity/Post
+class Post
+{
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    /** @ORM\Column(name="title", type="string", length=255) */
+    private $title;
+    /** @ORM\Column(name="bodya", type="text") */
+    private $body;
+    /** @ORM\ManyToOne(targetEntity="User", inversedBy="posts") */
+    private $postedBy;
+}
+
+class User
+{
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    /** @ORM\Column(name="username", type="string", length=100, unique=true) */
+    private $username;
+}
+```
+
+Turn that directly into...
+
+```yaml
+AppBundle\Entity\Post:
+    Post-1:
+        title: 'Is Making Fixtures Too Time Consuming'
+        body: 'Check out AliceBundle!'
+        postedBy: '@User-1'
+    Post-2:
+        title: 'Too Much Data to Hand Write?'
+        body: 'Check out AliceGeneratorBundle!'
+        postedBy: '@User-1'
+AppBundle\Entity\User:
+    User-1:
+        username: testUser
+```
+
+Stop writing fixtures by hand. Use your UI to create your data and let this bundle do the rest :)
 
 ## Documentation
 
