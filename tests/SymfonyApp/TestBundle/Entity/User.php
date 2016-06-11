@@ -4,7 +4,7 @@ namespace Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Trappar\AliceGeneratorBundle\Annotation\FixtureData;
+use Trappar\AliceGeneratorBundle\Annotation as Fixture;
 
 /**
  * User
@@ -34,7 +34,7 @@ class User
      * @var string
      * 
      * @ORM\Column(name="password", type="string")
-     * @FixtureData("test")
+     * @Fixture\Data("test")
      */
     private $password;
 
@@ -44,13 +44,6 @@ class User
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     private $email;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created", type="datetime")
-     */
-    private $created;
 
     /**
      * @var array
@@ -68,7 +61,6 @@ class User
 
     public function __construct()
     {
-        $this->created = new \DateTime();
         $this->posts = new ArrayCollection();
     }
 
@@ -147,16 +139,6 @@ class User
     public function getEmail()
     {
         return $this->email;
-    }
-
-    /**
-     * Get created
-     *
-     * @return \DateTime
-     */
-    public function getCreated()
-    {
-        return $this->created;
     }
 
     /**

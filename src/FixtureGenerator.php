@@ -2,7 +2,6 @@
 
 namespace Trappar\AliceGeneratorBundle;
 
-use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\MappingException;
@@ -11,15 +10,12 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Symfony\Component\Yaml\Yaml;
-use Trappar\AliceGeneratorBundle\Annotation\FixtureData;
-use Trappar\AliceGeneratorBundle\Annotation\FixtureFaker;
+use Trappar\AliceGeneratorBundle\Annotation\AnnotationHandler;
 use Trappar\AliceGeneratorBundle\DataStorage\EntityCache;
 
 class FixtureGenerator
 {
     const SKIPVALUE = 'FIXTURE_GENERATOR_SKIP_VALUE';
-
-    private $typeProviders = [];
 
     /**
      * @var ClassMetadataFactory
@@ -45,15 +41,11 @@ class FixtureGenerator
      * @var EntityCache
      */
     private $entityCache;
-    /**
-     * @var Reader
-     */
-    private $reader;
 
-    public function __construct(EntityManager $em, Reader $reader)
+    public function __construct(EntityManager $em, AnnotationHandler $handler)
     {
-        $this->metadataFactory = $em->getMetadataFactory();
-        $this->reader          = $reader;
+        $this->metadataFactory   = $em->getMetadataFactory();
+        $this->annotationHandler = $handler;
     }
 
     public function generateYaml($value, $fixtureGenerationContext = null)
@@ -70,11 +62,6 @@ class FixtureGenerator
         $this->handleUnknownType($value);
 
         return Yaml::dump($this->resultCache, 3);
-    }
-
-    public function addTypeProvider($provider)
-    {
-        $this->typeProviders[] = $provider;
     }
 
     private function handleUnknownType($value)
@@ -124,9 +111,9 @@ class FixtureGenerator
             }
 
             return self::SKIPVALUE;
-        } else {
-            return $this->applyTypeProviders($object);
         }
+        
+        return $object;
     }
 
     protected function handleArray($array)
@@ -148,28 +135,6 @@ class FixtureGenerator
         }
 
         return $array;
-    }
-
-    protected function applyTypeProviders($object)
-    {
-        $class = ClassUtils::getClass($object);
-
-        foreach ($this->typeProviders as $typeProvider) {
-            if (method_exists($typeProvider, 'fixture')) {
-                $r = new \ReflectionMethod(get_class($typeProvider), 'fixture');
-                /** @var \ReflectionParameter[] $params */
-                $params = $r->getParameters();
-                if (isset($params[0])) {
-                    if ($params[0]->getClass()->getName() == $class) {
-                        return $typeProvider->fixture($object);
-                    }
-                } else {
-                    throw new \Exception('Fixture Generator Type Provider "fixture" method argument error');
-                }
-            }
-        }
-
-        return $object;
     }
 
     /**
@@ -216,16 +181,9 @@ class FixtureGenerator
             $value        = $property->getValue($object);
             $initialValue = $property->getValue($newObject);
 
-            if ($fixtureFaker = $this->reader->getPropertyAnnotation($property, FixtureFaker::class)) {
-                /** @var FixtureFaker $fixtureFaker */
-                $value = $this->createValueFromFixtureFakerAnnotation($fixtureFaker, $class, $propName, $value);
-            } elseif ($fixtureData = $this->reader->getPropertyAnnotation($property, FixtureData::class)) {
-                /** @var FixtureData $fixtureData */
-                $value = $fixtureData->value;
-                if (is_null($value)) {
-                    $value = self::SKIPVALUE;
-                }
-            } else {
+            list($wasThereAnnotation, $value) = $this->annotationHandler->handleProperty($property, $class, $value);
+
+            if (!$wasThereAnnotation) {
                 // Avoid setting unnecessary data
                 if (is_null($value) || is_bool($value) || is_object($value)) {
                     if ($value === $initialValue) {
@@ -236,14 +194,14 @@ class FixtureGenerator
                         continue;
                     }
                 }
-                
-                $value = $this->handleUnknownType($value);
-            }
 
-            // No need to make references for non-owning side associations
-            if (isset($associations[$propName])) {
-                if (!$classMetadata->getAssociationMapping($propName)['isOwningSide']) {
-                    continue;
+                $value = $this->handleUnknownType($value);
+
+                // No need to make references for non-owning side associations
+                if (isset($associations[$propName])) {
+                    if (!$classMetadata->getAssociationMapping($propName)['isOwningSide']) {
+                        continue;
+                    }
                 }
             }
 
@@ -263,33 +221,6 @@ class FixtureGenerator
 
             return true;
         }
-    }
-
-    protected function createValueFromFixtureFakerAnnotation(FixtureFaker $annotation, $class, $propName, $value)
-    {
-        $arguments = $annotation->arguments;
-
-        if (!is_array($arguments)) {
-            throw new AnnotationException("FixtureFaker annotation - arguments must be array on: $class->$propName");
-        }
-
-        $arguments = array_map(function ($item) use ($value) {
-            if ($item === '$value') {
-                $item = $value;
-            } elseif ($item === '\$value') {
-                $item = '$value';
-            }
-            if (is_string($item)) {
-                return '"'.$item.'"';
-            } elseif (is_bool($item)) {
-                return ($item) ? 'true' : 'false';
-            }
-
-            return $item;
-        }, $arguments);
-        $arguments = implode($arguments, ', ');
-        
-        return "<{$annotation->value}($arguments)>";
     }
 
     protected function isObjectMapped($object)

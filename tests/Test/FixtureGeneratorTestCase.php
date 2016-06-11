@@ -24,11 +24,6 @@ abstract class FixtureGeneratorTestCase extends KernelTestCase
     protected $fixtureGenerator;
 
     /**
-     * @var DateTimeProvider
-     */
-    protected $datetimeProvider;
-
-    /**
      * @var EntityManager
      */
     protected $em;
@@ -44,7 +39,6 @@ abstract class FixtureGeneratorTestCase extends KernelTestCase
         $this->runConsole('doctrine:schema:create');
 
         $this->fixtureGenerator = static::$kernel->getContainer()->get('trappar_alice_generator.fixture_generator');
-        $this->datetimeProvider = static::$kernel->getContainer()->get('faker.provider.datetime');
         $this->em               = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
     }
 

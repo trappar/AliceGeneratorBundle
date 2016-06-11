@@ -13,7 +13,7 @@ class FixtureGeneratorCommandTest extends FixtureGeneratorTestCase
         $generateFileLocation = __DIR__ . '/../SymfonyApp/TestBundle/DataFixtures/ORM/generated.yml';
 
         $filesystem = new Filesystem();
-        $filesystem->remove(__DIR__ . '/../SymfonyApp/TestBundle/DataFixtures');
+        $filesystem->remove(__DIR__ . '/../SymfonyApp/TestBundle/DataFixtures/ORM');
 
         $this->runConsole('generate:fixtures');
 

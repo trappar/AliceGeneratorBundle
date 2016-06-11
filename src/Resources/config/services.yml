@@ -3,14 +3,14 @@ services:
         class: Trappar\AliceGeneratorBundle\FixtureGenerator
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@annotation_reader"
+            - "@trappar_alice_generator.annotation.handler"
+
+    trappar_alice_generator.annotation.handler:
+        class: Trappar\AliceGeneratorBundle\Annotation\AnnotationHandler
+        calls:
+            - [setContainer, ['@service_container']]
 
     trappar_alice_generator.command.fixture_generator:
         abstract: true
         calls:
             - [setFixtureGenerator, ['@trappar_alice_generator.fixture_generator']]
-
-    faker.provider.datetime:
-        class: Trappar\AliceGeneratorBundle\DataFixtures\Faker\Provider\DateTimeProvider
-        tags:
-            - { name: trappar_alice_generator.faker.provider }

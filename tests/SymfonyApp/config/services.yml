@@ -4,3 +4,6 @@ services:
         parent: trappar_alice_generator.command.fixture_generator
         tags:
             - { name: console.command }
+
+    faker.provider.foo:
+        class: Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\FooProvider

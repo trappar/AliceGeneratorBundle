@@ -26,12 +26,12 @@ class TrapparAliceGeneratorExtensionTest extends TestCase
             ->getMock();
 
         $containerBuilder
-            ->expects($this->exactly(3))
+            ->expects($this->any())
             ->method('setDefinition')
             ->with($this->logicalOr(
                 'trappar_alice_generator.fixture_generator',
-                'trappar_alice_generator.command.fixture_generator',
-                'faker.provider.datetime'
+                'trappar_alice_generator.annotation.handler',
+                'trappar_alice_generator.command.fixture_generator'
             ), $this->isInstanceOf(Definition::class));
         
         $extension->load([], $containerBuilder);

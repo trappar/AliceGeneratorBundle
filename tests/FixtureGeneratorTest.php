@@ -2,9 +2,9 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests;
 
-use Symfony\Component\Yaml\Yaml;
 use Trappar\AliceGeneratorBundle\FixtureGenerationContext;
 use Trappar\AliceGeneratorBundle\FixtureGenerator;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\AnnotationTester;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\Post;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
 use Trappar\AliceGeneratorBundle\Tests\Test\FixtureGeneratorTestCase;
@@ -19,15 +19,15 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
     public function testMultipleEntities()
     {
         $user = $this->createTestData();
-        
+
         $yaml = $this->fixtureGenerator->generateYaml($user);
         $this->assertYamlGeneratesEqualEntity($user, $yaml);
     }
-    
+
     public function testNoRecursion()
     {
         $user = $this->createTestData();
-        
+
         $yaml = $this->fixtureGenerator->generateYaml($user,
             FixtureGenerationContext::create()->setMaximumRecursion(0)
         );
@@ -37,25 +37,42 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
                 'User-1' => [
                     'username' => $user->getUsername(),
                     'password' => 'test',
-                    'created'  => $this->datetimeProvider->fixture($user->getCreated()),
-                    'roles'    => [ 'ROLE_ADMIN' ]
+                    'roles'    => ['ROLE_ADMIN']
                 ]
             ]
         ], $yaml);
     }
-    
+
     public function testObjectConstraint()
     {
         $user = $this->createTestData();
         $post = $user->getPosts()->first();
-        
+
         $context = FixtureGenerationContext::create()
             ->addEntityConstraint($post);
-        
-        $yaml = $this->fixtureGenerator->generateYaml($user, $context);
+
+        $yaml   = $this->fixtureGenerator->generateYaml($user, $context);
         $parsed = $this->parseYaml($yaml);
-        
+
         $this->assertArrayNotHasKey('Post-2', $parsed[Post::class]);
+    }
+
+    public function testAnnotations()
+    {
+        $test = new AnnotationTester();
+
+        $yaml = $this->fixtureGenerator->generateYaml($test);
+        $this->assertYamlEquals([
+            AnnotationTester::class => [
+                'AnnotationTester-1' => [
+                    'a' => 'test',
+                    'b' => '<test()>',
+                    'c' => '<test("test", true)>',
+                    'd' => '<test("blah", 1, true)>',
+                    'e' => '<test("blah", 1, true)>'
+                ]
+            ]
+        ], $yaml);
     }
 
     /**
