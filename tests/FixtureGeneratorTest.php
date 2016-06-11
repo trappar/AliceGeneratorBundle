@@ -60,6 +60,7 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
     public function testAnnotations()
     {
         $test = new AnnotationTester();
+        $test->f = 'fValue';
 
         $yaml = $this->fixtureGenerator->generateYaml($test);
         $this->assertYamlEquals([
@@ -69,7 +70,8 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
                     'b' => '<test()>',
                     'c' => '<test("test", true)>',
                     'd' => '<test("blah", 1, true)>',
-                    'e' => '<test("blah", 1, true)>'
+                    'e' => '<test("blah", 1, true)>',
+                    'f' => '<test("fValue")>'
                 ]
             ]
         ], $yaml);

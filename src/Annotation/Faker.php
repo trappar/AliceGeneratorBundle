@@ -17,6 +17,11 @@ final class Faker implements FixtureAnnotationInterface
     public $name;
 
     /**
+     * @var boolean
+     */
+    public $valueAsArgs;
+
+    /**
      * @var array
      */
     public $arguments;

@@ -38,12 +38,17 @@ AppBundle\Entity\User:
 
 ## Faker Annotation
 
-The Faker annotation allows you to specify a faker provider which will be used in place of the actual value of a property.
-There are several ways to use this annotation. You can pass a static set of arguments, a service with a toFixture() method,
-or a class with a static toFixture (or any other custom named method).
+The Faker annotation allows you to specify a faker provider which will be used in place of the actual value of a
+property. There are several ways to use this annotation. You can have it pass a static set of arguments, pass the value
+of the property as a single argument, a service with a toFixture() method, or a class with a static toFixture
+(or any other custom named method).
 
-This is a main point of customization for this bundle, and it's extremely powerful. Keep this in mind while you're working
-with your data.
+This is a main point of customization for this bundle, and it's extremely powerful. Keep this in mind while you're
+working with your data.
+
+#### Usage examples:
+
+**Pass a static set of arguments**
 
 ```php
 <?php
@@ -72,9 +77,36 @@ AppBundle\Entity\Post:
         body: <paragraphs(3, true)>
 ```
 
-#### Other usage examples:
+**Pass property value as argument**
 
-**You can pass a service**
+```php
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Trappar\AliceGeneratorBundle\Annotation as Fixture;
+
+class Post
+{
+    /**
+     * @var string
+     * @ORM\Column(name="title", type="string")
+     * @Fixture\Faker("shuffle", valueAsArgs=true)
+     */
+    private $title = 'My Title';
+}
+```
+
+Will generate the following
+
+```yaml
+AppBundle\Entity\Post:
+    Post-1:
+        title: <shuffle("My Title")>
+```
+
+**Pass a service**
 
 ```php
 /**
@@ -107,7 +139,7 @@ AppBundle\User:
         something: <custom(1, true)> 
 ```
 
-**You can pass a class**
+**Pass a class**
 
 ```php
 /**

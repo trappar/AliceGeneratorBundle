@@ -71,17 +71,19 @@ class AnnotationHandler implements ContainerAwareInterface
         }
 
         // Only allow one of arguments, class, or service
-        if (count(array_filter([$annotation->arguments, $annotation->class, $annotation->service], function ($item) {
+        if (count(array_filter([$annotation->arguments, $annotation->class, $annotation->service, $annotation->valueAsArgs], function ($item) {
                 return $item;
             })) > 1
         ) {
             throw AnnotationException::typeError(sprintf(
-                '%s - Only one of "arguments", "class", or "service" can be declared.',
+                '%s - Only one of "valueAsArgs", "arguments", "class", or "service" can be declared.',
                 $context
             ));
         }
 
-        if ($annotation->arguments) {
+        if ($annotation->valueAsArgs) {
+            $arguments = [$value];
+        } elseif ($annotation->arguments) {
             $arguments = $annotation->arguments;
 
             if (!is_array($annotation->arguments)) {

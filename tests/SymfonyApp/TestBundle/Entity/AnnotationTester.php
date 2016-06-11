@@ -17,48 +17,55 @@ class AnnotationTester
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    public $id;
     
     /**
      * @var string
      * @ORM\Column(name="a", type="string")
      * @Fixture\Data("test")
      */
-    private $a;
+    public $a;
 
     /**
      * @var string
      * @ORM\Column(name="b", type="string")
      * @Fixture\Faker("test")
      */
-    private $b;
+    public $b;
     
     /**
      * @var string
      * @ORM\Column(name="c", type="string")
      * @Fixture\Faker("test", arguments={"test", true})
      */
-    private $c;
+    public $c;
 
     /**
      * @var string
      * @ORM\Column(name="d", type="string")
      * @Fixture\Faker("test", class="Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\FooProvider")
      */
-    private $d;
+    public $d;
 
     /**
      * @var string
      * @ORM\Column(name="e", type="string")
      * @Fixture\Faker("test", service="faker.provider.foo")
      */
-    private $e;
+    public $e;
+
+    /**
+     * @var string
+     * @ORM\Column(name="f", type="string")
+     * @Fixture\Faker("test", valueAsArgs=true)
+     */
+    public $f;
 
     /**
      * @var
-     * @ORM\Column(name="f", type="string")
+     * @ORM\Column(name="g", type="string")
      * @Fixture\Ignore()
      */
-    private $f;
+    public $g;
 }
 
