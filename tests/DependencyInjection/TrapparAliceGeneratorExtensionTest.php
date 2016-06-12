@@ -32,7 +32,7 @@ class TrapparAliceGeneratorExtensionTest extends TestCase
                 'trappar_alice_generator.fixture_generator',
                 'trappar_alice_generator.annotation.handler',
                 'trappar_alice_generator.command.fixture_generator',
-                'faker.provider.datetime'
+                'faker.provider.specific_datetime'
             ), $this->isInstanceOf(Definition::class));
         
         $extension->load([], $containerBuilder);

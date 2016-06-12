@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\DataFixtures\Faker\Provider;
 
-class DateTimeProvider
+class SpecificDateTimeProvider
 {
     public static function toFixture(\DateTime $dateTime)
     {

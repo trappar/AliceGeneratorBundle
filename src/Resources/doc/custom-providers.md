@@ -11,6 +11,10 @@ have an object type returned from many places in your database, and you would li
 This is why this bundle offers a custom providers feature, which will be very familiar to anyone who's used
 AliceBundle's Custom Faker Providers.
 
+*Side note: Since `DateTime` objects appear in entities quite often, we include a custom provider for it in this bundle.
+You can take a look at the code for that [provider here](src/DataFixtures/Faker/Provider/SpecificDateTimeProvider.php),
+and its corresponding [service declaration here](src/Resources/config/services.yml).*
+
 For the following example we'll create a custom provider that covers converting to and from the "phone-number" doctrine
 type provided by the [misd-service-development/phone-number-bundle](https://github.com/misd-service-development/phone-number-bundle).
 

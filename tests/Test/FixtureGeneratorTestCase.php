@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
-use Trappar\AliceGeneratorBundle\DataFixtures\Faker\Provider\DateTimeProvider;
+use Trappar\AliceGeneratorBundle\DataFixtures\Faker\Provider\SpecificDateTimeProvider;
 use Trappar\AliceGeneratorBundle\FixtureGenerator;
 
 abstract class FixtureGeneratorTestCase extends KernelTestCase
