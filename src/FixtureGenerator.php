@@ -17,6 +17,8 @@ class FixtureGenerator
 {
     const SKIPVALUE = 'FIXTURE_GENERATOR_SKIP_VALUE';
 
+    private $typeProviders = [];
+
     /**
      * @var ClassMetadataFactory
      */
@@ -62,6 +64,11 @@ class FixtureGenerator
         $this->handleUnknownType($value);
 
         return Yaml::dump($this->resultCache, 3);
+    }
+
+    public function addTypeProvider($provider)
+    {
+        $this->typeProviders[] = $provider;
     }
 
     private function handleUnknownType($value)
@@ -111,9 +118,9 @@ class FixtureGenerator
             }
 
             return self::SKIPVALUE;
+        } else {
+            return $this->applyTypeProviders($object);
         }
-        
-        return $object;
     }
 
     protected function handleArray($array)
@@ -135,6 +142,32 @@ class FixtureGenerator
         }
 
         return $array;
+    }
+
+    protected function applyTypeProviders($object)
+    {
+        $class = ClassUtils::getClass($object);
+
+        foreach ($this->typeProviders as $typeProvider) {
+            if (method_exists($typeProvider, 'toFixture')) {
+                $r = new \ReflectionMethod(get_class($typeProvider), 'toFixture');
+                /** @var \ReflectionParameter[] $params */
+                $params = $r->getParameters();
+                
+                if (count($params) != 1) {
+                    throw new \InvalidArgumentException(sprintf(
+                        'Fixture Generator Provider %s - "toFixture" method must contain exactly one argument.',
+                        get_class($typeProvider)
+                    ));
+                }
+                
+                if ($params[0]->getClass()->getName() == $class) {
+                    return $typeProvider->toFixture($object);
+                }
+            }
+        }
+
+        return $object;
     }
 
     /**

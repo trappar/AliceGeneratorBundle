@@ -209,4 +209,4 @@ class User
 Not much yaml to show here since this property won't show up in generated fixtures at all!
 
 Previous chapter: [Advanced Usage](advanced-usage.md)<br />
-Next chapter: [Resources](../../../README.md#resources)
+Next chapter: [Custom Providers](custom-providers.md)

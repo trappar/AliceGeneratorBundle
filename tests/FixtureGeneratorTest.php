@@ -5,6 +5,7 @@ namespace Trappar\AliceGeneratorBundle\Tests;
 use Trappar\AliceGeneratorBundle\FixtureGenerationContext;
 use Trappar\AliceGeneratorBundle\FixtureGenerator;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\AnnotationTester;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\DateTimeProviderTester;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\Post;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
 use Trappar\AliceGeneratorBundle\Tests\Test\FixtureGeneratorTestCase;
@@ -72,6 +73,22 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
                     'd' => '<test("blah", 1, true)>',
                     'e' => '<test("blah", 1, true)>',
                     'f' => '<test("fValue")>'
+                ]
+            ]
+        ], $yaml);
+    }
+    
+    public function testDateTimeProvider()
+    {
+        $test          = new DateTimeProviderTester();
+        $dateTime      = new \DateTime('Jan 1 1999');
+        $test->created = $dateTime;
+
+        $yaml = $this->fixtureGenerator->generateYaml($test);
+        $this->assertYamlEquals([
+            DateTimeProviderTester::class => [
+                'DateTimeProviderTester-1' => [
+                    'created' => '<(new \DateTime("1999-01-01"))>',
                 ]
             ]
         ], $yaml);

@@ -14,3 +14,8 @@ services:
         abstract: true
         calls:
             - [setFixtureGenerator, ['@trappar_alice_generator.fixture_generator']]
+
+    faker.provider.datetime:
+        class: Trappar\AliceGeneratorBundle\DataFixtures\Faker\Provider\DateTimeProvider
+        tags:
+            - { name: trappar_alice_generator.faker.provider }

@@ -31,7 +31,8 @@ class TrapparAliceGeneratorExtensionTest extends TestCase
             ->with($this->logicalOr(
                 'trappar_alice_generator.fixture_generator',
                 'trappar_alice_generator.annotation.handler',
-                'trappar_alice_generator.command.fixture_generator'
+                'trappar_alice_generator.command.fixture_generator',
+                'faker.provider.datetime'
             ), $this->isInstanceOf(Definition::class));
         
         $extension->load([], $containerBuilder);
