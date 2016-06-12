@@ -45,7 +45,7 @@ class PhoneNumberProvider
     }
     
     /**
-     * Alternative implementation of this method returning an array - this will yeild the exact same result
+     * Alternative implementation of this method returning an array - this will yield the same result
      * @Fixture\Faker("phoneNumber")
      */
     public static function toFixture(PhoneNumber $phoneNumber) {
