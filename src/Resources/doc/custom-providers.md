@@ -15,6 +15,8 @@ AliceBundle's Custom Faker Providers.
 You can take a look at the code for that [provider here](/src/DataFixtures/Faker/Provider/SpecificDateTimeProvider.php),
 and its corresponding [service declaration here](/src/Resources/config/services.yml).*
 
+## Example
+
 For the following example we'll create a custom provider that covers converting to and from the "phone-number" doctrine
 type provided by the [misd-service-development/phone-number-bundle](https://github.com/misd-service-development/phone-number-bundle).
 
