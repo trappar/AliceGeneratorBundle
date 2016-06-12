@@ -73,19 +73,6 @@ abstract class FixtureGeneratorTestCase extends KernelTestCase
         $this->assertSame($expected, $this->parseYaml($yaml));
     }
 
-    protected function assertYamlGeneratesEqualEntity($entity, $yaml)
-    {
-        $this->em->persist($entity);
-        $this->em->flush($entity);
-
-        $this->writeYaml($yaml);
-        $this->runConsole('hautelook_alice:doctrine:fixtures:load', ['-n' => true, '--purge-with-truncate' => true]);
-
-        $fixtureGeneratedEntity = $this->em->find(get_class($entity), 1);
-        
-        $this->assertSame($entity, $fixtureGeneratedEntity);
-    }
-
     protected function writeYaml($yml)
     {
         $fixturePath = __DIR__ . '/../SymfonyApp/TestBundle/DataFixtures/ORM';

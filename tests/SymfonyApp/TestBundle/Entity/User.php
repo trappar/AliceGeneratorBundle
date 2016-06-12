@@ -59,6 +59,20 @@ class User
      */
     private $posts;
 
+    /**
+     * Just here for testing
+     * @var ProviderTester
+     * @ORM\OneToOne(targetEntity="ProviderTester")
+     */
+    public $providerTester1;
+    
+    /**
+     * Just here for testing
+     * @var ProviderTester
+     * @ORM\OneToOne(targetEntity="ProviderTester")
+     */
+    public $providerTester2;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();

@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Trappar\AliceGeneratorBundle\Faker\ProviderGenerator;
 use Trappar\AliceGeneratorBundle\FixtureGenerator;
 
 class AnnotationHandler implements ContainerAwareInterface
@@ -29,7 +30,7 @@ class AnnotationHandler implements ContainerAwareInterface
         $this->reader    = $this->container->get('annotation_reader');
     }
 
-    public function handleProperty(\ReflectionProperty $property, $class, $value)
+    public function handlePropertyAnnotations(\ReflectionProperty $property, $class, $value)
     {
         $annotations = $this->reader->getPropertyAnnotations($property);
         $annotations = array_values(array_filter($annotations, function ($annotation) {
@@ -57,6 +58,30 @@ class AnnotationHandler implements ContainerAwareInterface
         }
 
         return [$valueModified, $value];
+    }
+    
+    public function getProviderFromMethod(\ReflectionMethod $method, $class, $arguments)
+    {
+        /** @var Faker $annotation */
+        $annotation = $this->reader->getMethodAnnotation($method, Faker::class);
+        
+        if (!$annotation) {
+            throw new AnnotationException(sprintf(
+                'Method %s of class "%s" - Must have @Faker annotation when returning array.',
+                $method->getName(),
+                $class
+            ));
+        } elseif (count(array_filter([$annotation->arguments, $annotation->class, $annotation->service, $annotation->valueAsArgs], function ($item) {
+            return $item;
+        })) > 0) {
+            throw new AnnotationException(sprintf(
+                '@Faker annotation on method %s of class "%s" - May not have "arguments", "class", "service", or "valueAsArgs" attributes.',
+                $method->getName(),
+                $class
+            ));
+        }
+        
+        return ProviderGenerator::generate($annotation->name, $arguments);
     }
 
     public function handleFakerAnnotation(Faker $annotation, \ReflectionProperty $property, $class, $value)
@@ -135,19 +160,7 @@ class AnnotationHandler implements ContainerAwareInterface
             $arguments = [];
         }
 
-        $arguments = array_map(function ($item) use ($value) {
-            if (is_string($item)) {
-                return '"' . $item . '"';
-            } elseif (is_bool($item)) {
-                return ($item) ? 'true' : 'false';
-            }
-
-            return $item;
-        }, $arguments);
-
-        $arguments = implode($arguments, ', ');
-
-        return "<{$annotation->name}($arguments)>";
+        return ProviderGenerator::generate($annotation->name, $arguments);
     }
 
     public function handleDataAnnotation(Data $annotation, \ReflectionProperty $property, $class)

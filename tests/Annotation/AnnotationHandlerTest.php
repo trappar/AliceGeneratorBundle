@@ -8,6 +8,7 @@ use Trappar\AliceGeneratorBundle\Annotation\AnnotationHandler;
 use Trappar\AliceGeneratorBundle\Annotation as Fixture;
 use Trappar\AliceGeneratorBundle\FixtureGenerator;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Command\GenerateFixturesCommand;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\FooProvider;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
 
 class AnnotationHandlerTest extends KernelTestCase
@@ -137,6 +138,48 @@ class AnnotationHandlerTest extends KernelTestCase
         $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
     }
 
+    public function testFakerOnMethod()
+    {
+        $method = new \ReflectionMethod(FooProvider::class, 'toFixture');
+
+        $provider = $this->annotationHandler->getProviderFromMethod($method, '', ['test']);
+
+        $this->assertSame('<test("test")>', $provider);
+    }
+    
+    /**
+     * @expectedException \Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessageRegExp /Must have @Faker/
+     */
+    public function testNoFakerOnMethod()
+    {
+        $method = new \ReflectionMethod(FooProvider::class, 'testMethod1');
+
+        $this->annotationHandler->getProviderFromMethod($method, '', []);
+    }
+    
+    /**
+     * @expectedException \Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessageRegExp /not be null/
+     */
+    public function testFakerOnMethodNoName()
+    {
+        $method = new \ReflectionMethod(FooProvider::class, 'testMethod2');
+        
+        $this->annotationHandler->getProviderFromMethod($method, '', []);
+    }
+
+    /**
+     * @expectedException \Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessageRegExp /May not have/
+     */
+    public function testFakerOnMethodInvalidAttribute()
+    {
+        $method = new \ReflectionMethod(FooProvider::class, 'testMethod3');
+
+        $this->annotationHandler->getProviderFromMethod($method, '', []);
+    }
+
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /may not have more than one/
@@ -145,7 +188,7 @@ class AnnotationHandlerTest extends KernelTestCase
     {
         $property = new \ReflectionProperty(InvalidAnnotations::class, 'whatever');
         
-        $this->annotationHandler->handleProperty($property, InvalidAnnotations::class, '');
+        $this->annotationHandler->handlePropertyAnnotations($property, InvalidAnnotations::class, '');
     }
 
     protected function getSampleProperty()

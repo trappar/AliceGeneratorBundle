@@ -6,7 +6,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
 
 /**
  * @Annotation
- * @Target("PROPERTY")
+ * @Target({"PROPERTY", "METHOD"})
  */
 final class Faker implements FixtureAnnotationInterface
 {

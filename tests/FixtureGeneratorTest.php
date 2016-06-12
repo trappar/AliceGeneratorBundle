@@ -4,9 +4,10 @@ namespace Trappar\AliceGeneratorBundle\Tests;
 
 use Trappar\AliceGeneratorBundle\FixtureGenerationContext;
 use Trappar\AliceGeneratorBundle\FixtureGenerator;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\NoArgumentProvider;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\AnnotationTester;
-use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\DateTimeProviderTester;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\Post;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\ProviderTester;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
 use Trappar\AliceGeneratorBundle\Tests\Test\FixtureGeneratorTestCase;
 
@@ -19,10 +20,23 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
 
     public function testMultipleEntities()
     {
+        // Insert our test data then clear so when we go fetch the test data from the database it will include proxy
+        // objects - so we can test that case.
         $user = $this->createTestData();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
+        
+        $post = $this->em->getRepository(Post::class)->find(1);
 
-        $yaml = $this->fixtureGenerator->generateYaml($user);
-        $this->assertYamlGeneratesEqualEntity($user, $yaml);
+        $yaml = $this->fixtureGenerator->generateYaml($post);
+
+        $this->writeYaml($yaml);
+        $this->runConsole('hautelook_alice:doctrine:fixtures:load', ['-n' => true, '--purge-with-truncate' => true]);
+
+        $fixtureGeneratedPost = $this->em->getRepository(Post::class)->find(1);
+
+        $this->assertSame($post, $fixtureGeneratedPost);
     }
 
     public function testNoRecursion()
@@ -39,6 +53,24 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
                     'username' => $user->getUsername(),
                     'password' => 'test',
                     'roles'    => ['ROLE_ADMIN']
+                ]
+            ]
+        ], $yaml);
+    }
+    
+    public function testNothingToSaveInChild()
+    {
+        $user = new User();
+        $providerTester = new ProviderTester();
+        $user->providerTester1 = $providerTester;
+        $user->providerTester2 = $providerTester;
+        
+        $yaml = $this->fixtureGenerator->generateYaml($user);
+        
+        $this->assertYamlEquals([
+            User::class => [
+                'User-1' => [
+                    'password' => 'test'
                 ]
             ]
         ], $yaml);
@@ -60,7 +92,7 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
 
     public function testAnnotations()
     {
-        $test = new AnnotationTester();
+        $test    = new AnnotationTester();
         $test->f = 'fValue';
 
         $yaml = $this->fixtureGenerator->generateYaml($test);
@@ -77,21 +109,55 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
             ]
         ], $yaml);
     }
-    
-    public function testDateTimeProvider()
+
+    public function testProviders()
     {
-        $test          = new DateTimeProviderTester();
+        $test          = new ProviderTester();
         $dateTime      = new \DateTime('Jan 1 1999');
+        $object        = new \stdClass();
+        $object->value = 'myValue';
         $test->created = $dateTime;
+        $test->object  = $object;
 
         $yaml = $this->fixtureGenerator->generateYaml($test);
         $this->assertYamlEquals([
-            DateTimeProviderTester::class => [
-                'DateTimeProviderTester-1' => [
+            ProviderTester::class => [
+                'ProviderTester-1' => [
                     'created' => '<(new \DateTime("1999-01-01"))>',
+                    'object' => '<test("myValue")>'
                 ]
             ]
         ], $yaml);
+    }
+    
+    public function testNoProviderForObject()
+    {
+        $test = new ProviderTester();
+        $test->object = new \Exception();
+
+        $yaml = $this->fixtureGenerator->generateYaml($test);
+        
+        $this->assertYamlEquals([
+            ProviderTester::class => [
+                'ProviderTester-1' => [
+                    'object' => null
+                ]
+            ]
+        ], $yaml);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessageRegExp /must contain exactly one argument/
+     */
+    public function testNoArgumentProvider()
+    {
+        $this->fixtureGenerator->addTypeProvider(new NoArgumentProvider());
+
+        $test = new ProviderTester();
+        $test->object = new \Exception();
+        
+        $this->fixtureGenerator->generateYaml($test);
     }
 
     /**

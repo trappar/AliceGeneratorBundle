@@ -2,9 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -150,19 +148,26 @@ class FixtureGenerator
 
         foreach ($this->typeProviders as $typeProvider) {
             if (method_exists($typeProvider, 'toFixture')) {
-                $r = new \ReflectionMethod(get_class($typeProvider), 'toFixture');
+                $userClass        = get_class($typeProvider);
+                $reflectionMethod = new \ReflectionMethod($userClass, 'toFixture');
                 /** @var \ReflectionParameter[] $params */
-                $params = $r->getParameters();
-                
+                $params = $reflectionMethod->getParameters();
+
                 if (count($params) != 1) {
                     throw new \InvalidArgumentException(sprintf(
                         'Fixture Generator Provider %s - "toFixture" method must contain exactly one argument.',
                         get_class($typeProvider)
                     ));
                 }
-                
+
                 if ($params[0]->getClass()->getName() == $class) {
-                    return $typeProvider->toFixture($object);
+                    $returnValue = $typeProvider->toFixture($object);
+
+                    if (is_array($returnValue)) {
+                        return $this->annotationHandler->getProviderFromMethod($reflectionMethod, $userClass, $returnValue);
+                    } else {
+                        return $returnValue;
+                    }
                 }
             }
         }
@@ -193,14 +198,10 @@ class FixtureGenerator
          * @var ClassMetadata         $classMetadata
          * @var \ReflectionProperty[] $reflectionProperties
          */
-        try {
-            $classMetadata        = $this->metadataFactory->getMetadataFor($class);
-            $reflectionProperties = $classMetadata->getReflectionProperties();
-            $identifiers          = $classMetadata->getIdentifier();
-            $associations         = $classMetadata->getAssociationMappings();
-        } catch (MappingException $e) {
-            throw new \Exception('Not sure how to handle object: ' . $class);
-        }
+        $classMetadata        = $this->metadataFactory->getMetadataFor($class);
+        $reflectionProperties = $classMetadata->getReflectionProperties();
+        $identifiers          = $classMetadata->getIdentifier();
+        $associations         = $classMetadata->getAssociationMappings();
 
         $saveValues = [];
         $this->recursionDepth++;
@@ -214,7 +215,7 @@ class FixtureGenerator
             $value        = $property->getValue($object);
             $initialValue = $property->getValue($newObject);
 
-            list($wasThereAnnotation, $value) = $this->annotationHandler->handleProperty($property, $class, $value);
+            list($wasThereAnnotation, $value) = $this->annotationHandler->handlePropertyAnnotations($property, $class, $value);
 
             if (!$wasThereAnnotation) {
                 // Avoid setting unnecessary data

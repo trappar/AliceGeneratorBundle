@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class DateTimeProviderTester
+class ProviderTester
 {
     /**
      * @var int
@@ -23,5 +23,11 @@ class DateTimeProviderTester
      * @ORM\Column(name="created", type="datetime")
      */
     public $created;
+
+    /**
+     * @var \stdClass
+     * @ORM\Column(name="object", type="string")
+     */
+    public $object;
 }
 

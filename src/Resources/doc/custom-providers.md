@@ -22,6 +22,7 @@ namespace AppBundle\DataFixtures\Faker\Provider;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Trappar\AliceGeneratorBundle\Annotation as Fixture;
 
 class PhoneNumberProvider
 {
@@ -36,6 +37,15 @@ class PhoneNumberProvider
         $number = PhoneNumberUtil::getInstance()->format($phoneNumber, PhoneNumberFormat::E164);
         return "<phoneNumber('$number')>";
     }
+    
+    /**
+     * Alternative implementation of this method returning an array - this will yeild the exact same result
+     * @Fixture\Faker("phoneNumber")
+     */
+    public static funciton toFixture(PhoneNumber $phoneNumber) {
+        $number = PhoneNumberUtil::getInstance()->format($phoneNumber, PhoneNumberFormat::E164);
+        return [$number];
+    }
 }
 ```
 
@@ -44,6 +54,8 @@ The method signature of `toFixture` is very important here. Here are the importa
 * Method may or may not be static (depending on if you need dependency injection)
 * Named `toFixture`
 * Must accept exactly one argument with a type declaration of the object type which this method supports.
+* Must return either a string representation of the desired faker provider or an array of arguments for the provider.
+* When returning an array of arguments, the method must have a @Faker annotation specifying the provider name.
 
 Also, you can't have multiple providers which support the same object type - in that case you should use a 
 [Faker annotation](src/Resources/doc/annotations.md#faker-annotation) instead.
