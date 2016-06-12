@@ -8,8 +8,10 @@ You have probably already read about one solution this bundle offers for this pr
 [Faker Annotation](annotations.md#faker-annotation), but this solution can be a bit tedious when you
 have an object type returned from many places in your database, and you would like it to be handled the same everywhere. 
 
-This is why this bundle offers a custom providers feature, which will be very familiar to anyone who's used
-AliceBundle's Custom Faker Providers.
+This is why this bundle offers a custom provider feature, which will be very familiar to anyone who's used
+AliceBundle's Custom Faker Providers. Create a custom provider to accept a particular object type, and any time an
+an object of that type is found on a entity's property it will use your custom provider code to create the fixture
+representation of it.
 
 *Side note: Since `DateTime` objects appear in entities quite often, we include a custom provider for it in this bundle.
 You can take a look at the code for that [provider here](/src/DataFixtures/Faker/Provider/SpecificDateTimeProvider.php),
@@ -32,25 +34,29 @@ use Trappar\AliceGeneratorBundle\Annotation as Fixture;
 
 class PhoneNumberProvider
 {
-    // Converts a international format phone number into a PhoneNumber object
-    public static function phoneNumber($phoneNumber)
-    {
-        return PhoneNumberUtil::getInstance()->parse($phoneNumber, 'US')
-    }
-    
-    // Converts a PhoneNumber object into a fixture-friendly format
+    /**
+     * Convert a PhoneNumber object into a fixture-friendly format
+     */
     public static function toFixture(PhoneNumber $phoneNumber) {
         $number = PhoneNumberUtil::getInstance()->format($phoneNumber, PhoneNumberFormat::E164);
         return "<phoneNumber('$number')>";
     }
     
     /**
-     * Alternative implementation of this method returning an array - this will yield the same result
+     * Alternative implementation returning an array - this will yield the same result as above
      * @Fixture\Faker("phoneNumber")
      */
     public static function toFixture(PhoneNumber $phoneNumber) {
         $number = PhoneNumberUtil::getInstance()->format($phoneNumber, PhoneNumberFormat::E164);
         return [$number];
+    }
+    
+    /**
+     * Convert an international format phone number given in a fixture into a PhoneNumber object
+     */
+    public static function phoneNumber($phoneNumber)
+    {
+        return PhoneNumberUtil::getInstance()->parse($phoneNumber, 'US');
     }
 }
 ```
