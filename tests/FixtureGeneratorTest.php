@@ -148,11 +148,20 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
 
     /**
      * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessageRegExp /"toFixture" must exist/
+     */
+    public function testInvalidProvider()
+    {
+        $this->fixtureGenerator->addProvider(new self());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessageRegExp /must contain exactly one argument/
      */
     public function testNoArgumentProvider()
     {
-        $this->fixtureGenerator->addTypeProvider(new NoArgumentProvider());
+        $this->fixtureGenerator->addProvider(new NoArgumentProvider());
 
         $test = new ProviderTester();
         $test->object = new \Exception();

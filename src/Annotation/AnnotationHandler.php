@@ -60,7 +60,7 @@ class AnnotationHandler implements ContainerAwareInterface
         return [$valueModified, $value];
     }
     
-    public function getProviderFromMethod(\ReflectionMethod $method, $class, $arguments)
+    public function createProviderFromMethod(\ReflectionMethod $method, $class, $arguments)
     {
         /** @var Faker $annotation */
         $annotation = $this->reader->getMethodAnnotation($method, Faker::class);

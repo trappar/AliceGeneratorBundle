@@ -22,7 +22,7 @@ final class ProviderCompilerPass implements CompilerPassInterface
         foreach ($taggedServices as $providerId => $tags) {
             $provider = new Reference($providerId);
 
-            $definition->addMethodCall('addTypeProvider', [$provider]);
+            $definition->addMethodCall('addProvider', [$provider]);
         }
     }
 }

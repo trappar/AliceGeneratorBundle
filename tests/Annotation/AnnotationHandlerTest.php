@@ -142,7 +142,7 @@ class AnnotationHandlerTest extends KernelTestCase
     {
         $method = new \ReflectionMethod(FooProvider::class, 'toFixture');
 
-        $provider = $this->annotationHandler->getProviderFromMethod($method, '', ['test']);
+        $provider = $this->annotationHandler->createProviderFromMethod($method, '', ['test']);
 
         $this->assertSame('<test("test")>', $provider);
     }
@@ -155,7 +155,7 @@ class AnnotationHandlerTest extends KernelTestCase
     {
         $method = new \ReflectionMethod(FooProvider::class, 'testMethod1');
 
-        $this->annotationHandler->getProviderFromMethod($method, '', []);
+        $this->annotationHandler->createProviderFromMethod($method, '', []);
     }
     
     /**
@@ -166,7 +166,7 @@ class AnnotationHandlerTest extends KernelTestCase
     {
         $method = new \ReflectionMethod(FooProvider::class, 'testMethod2');
         
-        $this->annotationHandler->getProviderFromMethod($method, '', []);
+        $this->annotationHandler->createProviderFromMethod($method, '', []);
     }
 
     /**
@@ -177,7 +177,7 @@ class AnnotationHandlerTest extends KernelTestCase
     {
         $method = new \ReflectionMethod(FooProvider::class, 'testMethod3');
 
-        $this->annotationHandler->getProviderFromMethod($method, '', []);
+        $this->annotationHandler->createProviderFromMethod($method, '', []);
     }
 
     /**
