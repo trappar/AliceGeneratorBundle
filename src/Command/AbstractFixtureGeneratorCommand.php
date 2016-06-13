@@ -3,13 +3,11 @@
 namespace Trappar\AliceGeneratorBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Trappar\AliceGeneratorBundle\FixtureGenerationContext;
 use Trappar\AliceGeneratorBundle\FixtureGenerator;
 
-abstract class AbstractFixtureGeneratorCommand extends Command implements FixtureGeneratorCommandInterface
+abstract class AbstractFixtureGeneratorCommand extends Command
 {
     /**
      * @var FixtureGenerator
@@ -24,38 +22,18 @@ abstract class AbstractFixtureGeneratorCommand extends Command implements Fixtur
         $this->fixtureGenerator = $fixtureGenerator;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return void
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function writeYaml($yaml, OutputInterface $output, $outputLocation)
     {
-        $filesystem = new Filesystem();
-        $entities = $this->getEntities($input, $output);
-        $context = $this->getFixtureGenerationContext();
-        $outputLocation = $this->getOutputLocation();
+        $filesystem      = new Filesystem();
         $outputDirectory = pathinfo($outputLocation, PATHINFO_DIRNAME);
 
-        $yaml = $this->fixtureGenerator->generateYaml($entities, $context);
-        
         $output->write("Writing generated fixtures to '$outputLocation' ... ");
-        
+
         if (!$filesystem->exists($outputDirectory)) {
             $filesystem->mkdir($outputDirectory);
         }
         $filesystem->dumpFile($outputLocation, $yaml);
-        
-        $output->writeln('OK!');
-    }
 
-    /**
-     * Override this method if you want more control over how fixtures are generated
-     * 
-     * @return FixtureGenerationContext
-     */
-    protected function getFixtureGenerationContext()
-    {
-        return FixtureGenerationContext::create();
+        $output->writeln('OK!');
     }
 }

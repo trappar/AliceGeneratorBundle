@@ -42,33 +42,23 @@ class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
     /**
      * @inheritdoc
      */
-    public function getEntities(InputInterface $input)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         // Implement code here to fetch some entities for example
-        $users = $this->em->getRepository('AppBundle:User')->findAll()
-        $posts = $this->em->getRepository('AppBundle:Post')->findAll()
+        $users = $this->em->getRepository('AppBundle:User')->findAll();
+        $posts = $this->em->getRepository('AppBundle:Post')->findAll();
         
-        return [$users, $posts];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getOutputLocation()
-    {
-        return __DIR__ . '/../DataFixtures/ORM/generated.yml';
+        $this->writeYaml(
+            $this->fixtureGenerator->generateYaml([$users, $posts]),
+            $output,
+            __DIR__ . '/../DataFixtures/ORM/generated.yml'
+        );
     }
 }
 ```
 
-**Notes:**
-
-* For information about the `configure` method reference ["How to Create a Console Command"](http://symfony.com/doc/current/cookbook/console/console_command.html)
-* You may also override the `getFixtureGenerationContext` method in your console command to specify options for how
-fixtures will be generated. See [Fixture Generation Contexts](#setting-options-for-fixture-generation)
-* `getEntries` will be called before `getFixtureGenerationContext`, so if you want to use some Input argument passed into
- the command to determine what options are set in the `FixtureGenerationContext` just make a class property and create the
- `FixtureGenerationContext` inside `getEntities`.
+**Note:** For information about the `configure` method reference
+["How to Create a Console Command"](http://symfony.com/doc/current/cookbook/console/console_command.html)
 
 #### Now register the command as a service
  
