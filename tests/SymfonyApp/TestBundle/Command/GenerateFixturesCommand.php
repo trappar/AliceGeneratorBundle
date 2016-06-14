@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Trappar\AliceGeneratorBundle\Command\AbstractFixtureGeneratorCommand;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\Post;
-use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
 
 class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
 {
@@ -21,18 +20,15 @@ class GenerateFixturesCommand extends AbstractFixtureGeneratorCommand
     /**
      * @inheritdoc
      */
-    public function getEntities(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $post = new Post();
-        $post->setTitle('test');
-        return $post;
-    }
+        $post->title = 'test';
 
-    /**
-     * @inheritdoc
-     */
-    public function getOutputLocation()
-    {
-        return __DIR__ . '/../DataFixtures/ORM/generated.yml';
+        $this->writeYaml(
+            $this->fixtureGenerator->generateYaml($post),
+            $output,
+            __DIR__ . '/../DataFixtures/ORM/generated.yml'
+        );
     }
 }

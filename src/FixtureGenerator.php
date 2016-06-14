@@ -10,10 +10,11 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Symfony\Component\Yaml\Yaml;
 use Trappar\AliceGeneratorBundle\Annotation\AnnotationHandler;
 use Trappar\AliceGeneratorBundle\DataStorage\EntityCache;
+use Trappar\AliceGeneratorBundle\Faker\ProviderHelper;
 
 class FixtureGenerator
 {
-    const SKIPVALUE = 'FIXTURE_GENERATOR_SKIP_VALUE';
+    const SKIP_VALUE = 'FIXTURE_GENERATOR_SKIP_VALUE';
 
     private $providers = [];
 
@@ -76,26 +77,26 @@ class FixtureGenerator
         }
     }
 
-    private function handleUnknownType($value)
+    protected function handleUnknownType($value, $context = null)
     {
         if (is_object($value) && !is_a($value, Collection::class)) {
-            return $this->handleObject($value);
+            return $this->handleObject($value, $context);
         }
 
         if (is_array($value) || is_a($value, Collection::class)) {
-            return $this->handleArray($value);
+            return $this->handleArray($value, $context);
         }
 
         return $value;
     }
 
-    protected function handleObject($object)
+    protected function handleObject($object, $context)
     {
-        $object = $this->applyProviders($object);
+        $object = $this->applyProviders($object, $context);
 
         if (is_object($object) && $this->isObjectMapped($object)) {
             if (!$this->fixtureGenerationContext->getEntityConstraints()->checkValid($object)) {
-                return self::SKIPVALUE;
+                return self::SKIP_VALUE;
             }
 
             $result          = $this->entityCache->find($object);
@@ -114,23 +115,23 @@ class FixtureGenerator
                         } else {
                             $this->entityCache->skip($object);
 
-                            return self::SKIPVALUE;
+                            return self::SKIP_VALUE;
                         }
                     }
                     break;
                 case EntityCache::OBJECT_SKIPPED:
-                    return self::SKIPVALUE;
+                    return self::SKIP_VALUE;
                 default:
                     return '@' . $referencePrefix . $result;
             }
 
-            return self::SKIPVALUE;
+            return self::SKIP_VALUE;
         }
 
         return $object;
     }
 
-    protected function handleArray($array)
+    protected function handleArray($array, $context)
     {
         if (is_a($array, Collection::class)) {
             /** @var Collection $array */
@@ -138,20 +139,20 @@ class FixtureGenerator
         }
 
         foreach ($array as $key => &$item) {
-            $item = $this->handleUnknownType($item);
-            if ($item === self::SKIPVALUE) {
+            $item = $this->handleUnknownType($item, $context);
+            if ($item === self::SKIP_VALUE) {
                 unset($array[$key]);
             }
         }
 
         if (!count($array)) {
-            return self::SKIPVALUE;
+            return self::SKIP_VALUE;
         }
 
         return $array;
     }
 
-    protected function applyProviders($object)
+    protected function applyProviders($object, $context)
     {
         $class = ClassUtils::getClass($object);
 
@@ -161,18 +162,25 @@ class FixtureGenerator
             /** @var \ReflectionParameter[] $params */
             $params = $reflectionMethod->getParameters();
 
-            if (count($params) != 1) {
+            if (count($params) < 1) {
                 throw new \InvalidArgumentException(sprintf(
-                    'Fixture Generator Provider %s - "toFixture" method must contain exactly one argument.',
-                    get_class($typeProvider)
+                    'Fixture Generator Provider %s - "toFixture" method must contain at least one argument.',
+                    $userClass
+                ));
+            }
+
+            if (!$params[0]->getClass()) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Fixture Generator Provider %s - "toFixture" method\'s first argument must have an object type declaration.',
+                    $userClass
                 ));
             }
 
             if ($params[0]->getClass()->getName() == $class) {
-                $returnValue = $typeProvider->toFixture($object);
+                $returnValue = ProviderHelper::call($typeProvider, 'toFixture', [$object, $context]);
 
                 if (is_array($returnValue)) {
-                    return $this->annotationHandler->createProviderFromMethod($reflectionMethod, $userClass, $returnValue);
+                    return $this->annotationHandler->createProviderFromMethod($reflectionMethod, $returnValue);
                 } else {
                     return $returnValue;
                 }
@@ -222,7 +230,8 @@ class FixtureGenerator
             $value        = $property->getValue($object);
             $initialValue = $property->getValue($newObject);
 
-            list($wasThereAnnotation, $value) = $this->annotationHandler->handlePropertyAnnotations($property, $class, $value);
+            list($wasThereAnnotation, $value) = $this->annotationHandler
+                ->handlePropertyAnnotations($property, $class, $value, $object);
 
             if (!$wasThereAnnotation) {
                 // Avoid setting unnecessary data
@@ -236,7 +245,7 @@ class FixtureGenerator
                     }
                 }
 
-                $value = $this->handleUnknownType($value);
+                $value = $this->handleUnknownType($value, $object);
 
                 // No need to make references for non-owning side associations
                 if (isset($associations[$propName])) {
@@ -246,7 +255,7 @@ class FixtureGenerator
                 }
             }
 
-            if ($value === self::SKIPVALUE) {
+            if ($value === self::SKIP_VALUE) {
                 continue;
             }
 

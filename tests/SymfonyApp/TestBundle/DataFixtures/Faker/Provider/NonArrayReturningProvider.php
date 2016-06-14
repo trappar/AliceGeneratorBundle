@@ -4,12 +4,10 @@ namespace Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\
 
 use Trappar\AliceGeneratorBundle\Annotation as Fixture;
 
-class NoArgumentProvider
+class NonArrayReturningProvider
 {
-    /**
-     * @return string
-     */
     public static function toFixture()
     {
+        return '<whoops()>';
     }
 }

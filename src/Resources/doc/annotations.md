@@ -125,7 +125,7 @@ namespace AppBundle\DataFixtures\Faker\Provider;
 
 class CustomFakerProvider
 {
-    public function toFixture($value) {
+    public function toFixture($value, $contextObject) {
         return [1, true];
     }
 }
@@ -180,6 +180,16 @@ AppBundle\User:
             OR
         something: 'This value is so customized: Some Value'
 ```
+
+### toFixture Definition
+
+When using the service or class attributes on @Faker, a custom method will be called. Here's the signature for that method:
+
+```php
+array toFixture ( [ mixed $value [ , object $context ]] )
+```
+
+You can choose to accept the value, context object, or neither depending on what information you need.
 
 ## Ignore Annotation
 

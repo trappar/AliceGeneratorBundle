@@ -4,12 +4,9 @@ namespace Trappar\AliceGeneratorBundle\Tests\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Trappar\AliceGeneratorBundle\Annotation\AnnotationHandler;
 use Trappar\AliceGeneratorBundle\Annotation as Fixture;
-use Trappar\AliceGeneratorBundle\FixtureGenerator;
-use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Command\GenerateFixturesCommand;
-use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\FooProvider;
-use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\User;
+use Trappar\AliceGeneratorBundle\Annotation\AnnotationHandler;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\InvalidAnnotationTester;
 
 class AnnotationHandlerTest extends KernelTestCase
 {
@@ -28,180 +25,143 @@ class AnnotationHandlerTest extends KernelTestCase
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /must be declared/
      */
-    public function testNullDataValue()
+    public function testInvalidDataValue()
     {
-        $data = new Fixture\Data();
-        $data->value = null;
-
-        $value = $this->annotationHandler->handleDataAnnotation($data, $this->getSampleProperty(), '');
-        $this->assertEquals(FixtureGenerator::SKIPVALUE, $value);
-    }
-    
-    /**
-     * @expectedException \Doctrine\Common\Annotations\AnnotationException
-     * @expectedExceptionMessageRegExp /must be declared/
-     */
-    public function testBadDataValue()
-    {
-        $data = new Fixture\Data();
-
-        $this->annotationHandler->handleDataAnnotation($data, $this->getSampleProperty(), '');
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidDataValue'),
+            '', '', ''
+        );
     }
 
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
-     * @expectedExceptionMessageRegExp /must be declared/
+     * @expectedExceptionMessageRegExp /not be null/
      */
-    public function testBadFakerValue()
+    public function testInvalidFakerName()
     {
-        $faker = new Fixture\Faker();
-
-        $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
-    }
-
-    /**
-     * @expectedException \Doctrine\Common\Annotations\AnnotationException
-     * @expectedExceptionMessageRegExp /must be an array/
-     */
-    public function testBadFakerArguments()
-    {
-        $faker            = new Fixture\Faker();
-        $faker->name      = 'test';
-        $faker->arguments = 'asdf';
-
-        $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidFakerName'),
+            '', '', ''
+        );
     }
 
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /valid class/
      */
-    public function testBadFakerClass()
+    public function testInvalidFakerClass()
     {
-        $faker        = new Fixture\Faker();
-        $faker->name  = 'test';
-        $faker->class = 'string';
-
-        $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidFakerClass'),
+            '', '', ''
+        );
     }
 
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /must contain a/
      */
-    public function testFakerClassNoToFixtureMethod()
+    public function testInvalidFakerClassNoToFixtureMethod()
     {
-        $faker        = new Fixture\Faker();
-        $faker->name  = 'test';
-        $faker->class = GenerateFixturesCommand::class;
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidFakerClassNoToFixtureMethod'),
+            '', '', ''
+        );
+    }
 
-        $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
+    /**
+     * @expectedException \Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessageRegExp /got string instead of expected array/
+     */
+    public function testInvalidFakerReturnsNonArray()
+    {
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidFakerReturnsNonArray'),
+            '', '', ''
+        );
     }
 
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /valid service/
      */
-    public function testBadFakerService()
+    public function testInvalidFakerService()
     {
-        $faker          = new Fixture\Faker();
-        $faker->name    = 'test';
-        $faker->service = 'string';
-
-        $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidFakerService'),
+            '', '', ''
+        );
     }
 
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /contain a toFixture method/
      */
-    public function testFakerServiceWithNoToFixtureMethod()
+    public function testInvalidFakerServiceNoToFixtureMethod()
     {
-        $faker          = new Fixture\Faker();
-        $faker->name    = 'test';
-        $faker->service = 'service_container';
-
-        $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidFakerServiceNoToFixtureMethod'),
+            '', '', ''
+        );
     }
 
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /Only one of/
      */
-    public function testBadFakerMultipleTypes()
+    public function testInvalidFakerMultipleAttributes()
     {
-        $faker          = new Fixture\Faker();
-        $faker->name    = 'test';
-        $faker->service = 'string';
-        $faker->class   = 'string';
-
-        $this->annotationHandler->handleFakerAnnotation($faker, $this->getSampleProperty(), '', '');
-    }
-
-    public function testFakerOnMethod()
-    {
-        $method = new \ReflectionMethod(FooProvider::class, 'toFixture');
-
-        $provider = $this->annotationHandler->createProviderFromMethod($method, '', ['test']);
-
-        $this->assertSame('<test("test")>', $provider);
-    }
-    
-    /**
-     * @expectedException \Doctrine\Common\Annotations\AnnotationException
-     * @expectedExceptionMessageRegExp /Must have @Faker/
-     */
-    public function testNoFakerOnMethod()
-    {
-        $method = new \ReflectionMethod(FooProvider::class, 'testMethod1');
-
-        $this->annotationHandler->createProviderFromMethod($method, '', []);
-    }
-    
-    /**
-     * @expectedException \Doctrine\Common\Annotations\AnnotationException
-     * @expectedExceptionMessageRegExp /not be null/
-     */
-    public function testFakerOnMethodNoName()
-    {
-        $method = new \ReflectionMethod(FooProvider::class, 'testMethod2');
-        
-        $this->annotationHandler->createProviderFromMethod($method, '', []);
-    }
-
-    /**
-     * @expectedException \Doctrine\Common\Annotations\AnnotationException
-     * @expectedExceptionMessageRegExp /May not have/
-     */
-    public function testFakerOnMethodInvalidAttribute()
-    {
-        $method = new \ReflectionMethod(FooProvider::class, 'testMethod3');
-
-        $this->annotationHandler->createProviderFromMethod($method, '', []);
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidFakerMultipleAttributes'),
+            '', '', ''
+        );
     }
 
     /**
      * @expectedException \Doctrine\Common\Annotations\AnnotationException
      * @expectedExceptionMessageRegExp /may not have more than one/
      */
-    public function testMultipleAnnotations()
+    public function testInvalidMultipleAnnotations()
     {
-        $property = new \ReflectionProperty(InvalidAnnotations::class, 'whatever');
-        
-        $this->annotationHandler->handlePropertyAnnotations($property, InvalidAnnotations::class, '');
+        $this->annotationHandler->handlePropertyAnnotations(
+            new \ReflectionProperty(InvalidAnnotationTester::class, 'invalidMultipleAnnotations'),
+            '', '', ''
+        );
     }
 
-    protected function getSampleProperty()
+    public function testFakerOnMethod()
     {
-        return new \ReflectionProperty(User::class, 'username');
+        $this->assertSame(
+            '<test()>',
+            $this->annotationHandler->createProviderFromMethod(
+                new \ReflectionMethod(InvalidAnnotationTester::class, 'validFakerOnMethod'),
+                []
+            )
+        );
     }
-}
 
-class InvalidAnnotations
-{
+
     /**
-     * @Fixture\Data("test")
-     * @Fixture\Faker("test")
+     * @expectedException \Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessageRegExp /Must have @Faker/
      */
-    public $whatever;
+    public function testInvalidFakerOnMethodNoAnnotation()
+    {
+        $this->annotationHandler->createProviderFromMethod(
+            new \ReflectionMethod(InvalidAnnotationTester::class, 'invalidFakerOnMethodNoAnnotation'),
+            []
+        );
+    }
+    
+    /**
+     * @expectedException \Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessageRegExp /May not have/
+     */
+    public function testInvalidFakerOnMethodAttribute()
+    {
+        $this->annotationHandler->createProviderFromMethod(
+            new \ReflectionMethod(InvalidAnnotationTester::class, 'invalidFakerOnMethodAttribute'),
+            []
+        );
+    }
 }

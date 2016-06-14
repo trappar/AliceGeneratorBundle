@@ -89,5 +89,25 @@ services:
 That's it! Now any time a PhoneNumber object is encountered in one of your Entities it will be handled nicely when
 generating fixtures, and the Faker provider will handle converting the fixture back into the proper object!
 
+## `toFixture` Definition
+
+Your custom provider will need to implement a `toFixture` method. You have probably already seen this discussed in the
+[Faker annotation doc](src/Resources/doc/annotations.md#tofixture-definition). The `toFixture` method for a custom
+provider is almost the same, but with two small differences:
+
+* When returning an array (as you would with a `toFixture` method called from @Faker) you must put a @Faker annotation
+on the `toFixture` method with a name specified. This is so that the `FixtureGenerator` knows how to create the string
+representation of the faker provider.
+* You may alternatively return a string, in which case it is assumed that you are handling the creation of the string
+representation of the faker provider yourself.
+
+Here's the actual method signature you should be using:
+
+```php
+array|string toFixture ( [ mixed $value [ , object $context ]] )
+```
+
+You can choose to accept the value, context object, or neither depending on what information you need.
+
 Previous chapter: [Annotations](annotations.md)<br />
 Next chapter: [Resources](../../../README.md#resources)

@@ -35,9 +35,6 @@ abstract class FixtureGeneratorTestCase extends KernelTestCase
         $this->application = new Application(self::$kernel);
         $this->application->setAutoExit(false);
 
-        $this->runConsole('doctrine:database:drop', ['--force' => true]);
-        $this->runConsole('doctrine:schema:create');
-
         $this->fixtureGenerator = static::$kernel->getContainer()->get('trappar_alice_generator.fixture_generator');
         $this->em               = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
     }

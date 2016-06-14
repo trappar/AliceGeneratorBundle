@@ -4,7 +4,7 @@ namespace Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\
 
 use Trappar\AliceGeneratorBundle\Annotation as Fixture;
 
-class BarProvider
+class OneArgProvider
 {
     /**
      * @param \stdClass $object
