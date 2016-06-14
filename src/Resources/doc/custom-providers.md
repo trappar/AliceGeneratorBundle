@@ -92,7 +92,7 @@ generating fixtures, and the Faker provider will handle converting the fixture b
 ## `toFixture` Definition
 
 Your custom provider will need to implement a `toFixture` method. You have probably already seen this discussed in the
-[Faker annotation doc](src/Resources/doc/annotations.md#tofixture-definition). The `toFixture` method for a custom
+[Faker annotation doc](annotations.md#tofixture-definition). The `toFixture` method for a custom
 provider is almost the same, but with two small differences:
 
 * When returning an array (as you would with a `toFixture` method called from @Faker) you must put a @Faker annotation
