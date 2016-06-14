@@ -77,22 +77,22 @@ class FixtureGenerator
         }
     }
 
-    protected function handleUnknownType($value, $context = null)
+    protected function handleUnknownType($value, $context = null, $contextPropName = null)
     {
         if (is_object($value) && !is_a($value, Collection::class)) {
-            return $this->handleObject($value, $context);
+            return $this->handleObject($value, $context, $contextPropName);
         }
 
         if (is_array($value) || is_a($value, Collection::class)) {
-            return $this->handleArray($value, $context);
+            return $this->handleArray($value, $context, $contextPropName);
         }
 
         return $value;
     }
 
-    protected function handleObject($object, $context)
+    protected function handleObject($object, $context, $contextPropName)
     {
-        $object = $this->applyProviders($object, $context);
+        $object = $this->applyProviders($object, $context, $contextPropName);
 
         if (is_object($object) && $this->isObjectMapped($object)) {
             if (!$this->fixtureGenerationContext->getEntityConstraints()->checkValid($object)) {
@@ -131,7 +131,7 @@ class FixtureGenerator
         return $object;
     }
 
-    protected function handleArray($array, $context)
+    protected function handleArray($array, $context, $contextPropName)
     {
         if (is_a($array, Collection::class)) {
             /** @var Collection $array */
@@ -139,7 +139,7 @@ class FixtureGenerator
         }
 
         foreach ($array as $key => &$item) {
-            $item = $this->handleUnknownType($item, $context);
+            $item = $this->handleUnknownType($item, $context, $contextPropName);
             if ($item === self::SKIP_VALUE) {
                 unset($array[$key]);
             }
@@ -152,7 +152,7 @@ class FixtureGenerator
         return $array;
     }
 
-    protected function applyProviders($object, $context)
+    protected function applyProviders($object, $context, $contextPropName)
     {
         $class = ClassUtils::getClass($object);
 
@@ -177,7 +177,7 @@ class FixtureGenerator
             }
 
             if ($params[0]->getClass()->getName() == $class) {
-                $returnValue = ProviderHelper::call($typeProvider, 'toFixture', [$object, $context]);
+                $returnValue = ProviderHelper::call($typeProvider, 'toFixture', [$object, $context, $contextPropName]);
 
                 if (is_array($returnValue)) {
                     return $this->annotationHandler->createProviderFromMethod($reflectionMethod, $returnValue);
@@ -245,7 +245,7 @@ class FixtureGenerator
                     }
                 }
 
-                $value = $this->handleUnknownType($value, $object);
+                $value = $this->handleUnknownType($value, $object, $propName);
 
                 // No need to make references for non-owning side associations
                 if (isset($associations[$propName])) {

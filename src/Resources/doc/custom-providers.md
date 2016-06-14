@@ -104,10 +104,15 @@ representation of the faker provider yourself.
 Here's the actual method signature you should be using:
 
 ```php
-array|string toFixture ( [ mixed $value [ , object $context ]] )
+array|string toFixture ( [ mixed $value [ , object $context [ , string $propName ]]] )
 ```
 
-You can choose to accept the value, context object, or neither depending on what information you need.
+You can choose to accept any number of the arguments, but they will be given in the order listed here. More about the
+arguments:
+
+* `mixed $value` - Whatever value was read from the property
+* `object $context` - The object which contained the property
+* `string $propName` - The string name of the property
 
 Previous chapter: [Annotations](annotations.md)<br />
 Next chapter: [Resources](../../../README.md#resources)

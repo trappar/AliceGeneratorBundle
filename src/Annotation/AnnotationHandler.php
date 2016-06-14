@@ -86,9 +86,9 @@ class AnnotationHandler implements ContainerAwareInterface
         return ProviderHelper::generate($annotation->name, $arguments);
     }
 
-    protected function handleFakerAnnotation(Faker $annotation, \ReflectionProperty $property, $class, $value, $object)
+    protected function handleFakerAnnotation(Faker $annotation, \ReflectionProperty $property, $class, $value, $context)
     {
-        $context = $this->createContext('@Faker declared on', $property, $class);
+        $errorContext = $this->createContext('@Faker declared on', $property, $class);
 
         // Only allow one of arguments, class, or service
         if (count(array_filter([$annotation->arguments, $annotation->class, $annotation->service, $annotation->valueAsArgs], function ($item) {
@@ -97,12 +97,13 @@ class AnnotationHandler implements ContainerAwareInterface
         ) {
             throw AnnotationException::typeError(sprintf(
                 '%s - Only one of "valueAsArgs", "arguments", "class", or "service" can be declared.',
-                $context
+                $errorContext
             ));
         }
 
         $userClass = null;
         $method = 'toFixture';
+        $toFixtureArgs = [$value, $context, $property->getName()];
 
         if ($annotation->valueAsArgs) {
             $arguments = [$value];
@@ -112,7 +113,7 @@ class AnnotationHandler implements ContainerAwareInterface
         } elseif ($annotation->class) {
             $callParts = explode('::', $annotation->class);
 
-            $method = (isset($userClass[1])) ? $userClass[1] : $method;
+            $method = (isset($callParts[1])) ? $callParts[1] : $method;
             $userClass = $callParts[0];
 
             if (!class_exists($userClass)) {
@@ -123,25 +124,25 @@ class AnnotationHandler implements ContainerAwareInterface
                 if (!class_exists($userClass)) {
                     throw AnnotationException::typeError(sprintf(
                         '%s - Attribute "class" of must be a valid class.',
-                        $context
+                        $errorContext
                     ));
                 }
             }
             if (!method_exists($userClass, $method)) {
                 throw AnnotationException::typeError(sprintf(
-                    '%s - Attribute "class" (%s) must contain a "%s" method.',
-                    $context,
+                    '%s - Attribute "class" (%s) must contain a static "%s" method.',
+                    $errorContext,
                     $userClass,
                     $method
                 ));
             }
 
-            $arguments = ProviderHelper::call($annotation->class, $method, [$value, $object]);
+            $arguments = ProviderHelper::call($userClass, $method, $toFixtureArgs);
         } elseif ($annotation->service) {
             if (!$this->container->has($annotation->service)) {
                 throw AnnotationException::typeError(sprintf(
                     '%s - Attribute "service" must be a valid service.',
-                    $context
+                    $errorContext
                 ));
             }
 
@@ -151,12 +152,12 @@ class AnnotationHandler implements ContainerAwareInterface
             if (!method_exists($service, 'toFixture')) {
                 throw AnnotationException::typeError(sprintf(
                     '%s - Service "%s" must contain a toFixture method.',
-                    $context,
+                    $errorContext,
                     $annotation->service
                 ));
             }
 
-            $arguments = ProviderHelper::call($service, $method, [$value, $object]);
+            $arguments = ProviderHelper::call($service, $method, $toFixtureArgs);
         } else {
             $arguments = [];
         }
@@ -165,7 +166,7 @@ class AnnotationHandler implements ContainerAwareInterface
             // This can only happen with class/service
             throw AnnotationException::typeError(sprintf(
                 '%s - Called "%s" "%s" method and got %s instead of expected array.',
-                $context,
+                $errorContext,
                 $userClass,
                 $method,
                 gettype($arguments)

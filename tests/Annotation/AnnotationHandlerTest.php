@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Trappar\AliceGeneratorBundle\Annotation as Fixture;
 use Trappar\AliceGeneratorBundle\Annotation\AnnotationHandler;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\InvalidAnnotationTester;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity\ValidAnnotationTester;
 
 class AnnotationHandlerTest extends KernelTestCase
 {
@@ -134,7 +135,7 @@ class AnnotationHandlerTest extends KernelTestCase
         $this->assertSame(
             '<test()>',
             $this->annotationHandler->createProviderFromMethod(
-                new \ReflectionMethod(InvalidAnnotationTester::class, 'validFakerOnMethod'),
+                new \ReflectionMethod(ValidAnnotationTester::class, 'toFixture'),
                 []
             )
         );

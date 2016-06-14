@@ -186,10 +186,15 @@ AppBundle\User:
 When using the service or class attributes on @Faker, a custom method will be called. Here's the signature for that method:
 
 ```php
-array toFixture ( [ mixed $value [ , object $context ]] )
+array toFixture ( [ mixed $value [ , object $context [ , string $propName ]]] )
 ```
 
-You can choose to accept the value, context object, or neither depending on what information you need.
+You can choose to accept any number of the arguments, but they will be given in the order listed here. More about the
+arguments:
+
+* `mixed $value` - Whatever value was read from the property
+* `object $context` - The object which contained the property
+* `string $propName` - The string name of the property
 
 ## Ignore Annotation
 

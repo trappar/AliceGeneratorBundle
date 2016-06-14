@@ -9,7 +9,7 @@ class TooManyArgumentsProviderTest extends FixtureGeneratorTestCase
 {
     /**
      * @expectedException \BadMethodCallException
-     * @expectedExceptionMessageRegExp /maximum of 2 arguments/
+     * @expectedExceptionMessageRegExp /accept a maximum of \d+ arguments/
      */
     public function test()
     {
@@ -20,7 +20,7 @@ class TooManyArgumentsProviderTest extends FixtureGeneratorTestCase
         $this->fixtureGenerator->generateYaml($test);
     }
 
-    public function toFixture(\Exception $exception, $more, $args)
+    public function toFixture(\Exception $exception, $too, $many, $args, $cant, $handle)
     {
     }
 }

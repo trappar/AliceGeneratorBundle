@@ -104,8 +104,10 @@ class FixtureGeneratorTest extends FixtureGeneratorTestCase
                     'data' => 'test',
                     'fakerBasic' => '<test()>',
                     'fakerArgs' => '<test("test", true)>',
-                    'fakerClass' => '<test()>',
-                    'fakerService' => '<test(null, 1, "'.ValidAnnotationTester::class.'")>',
+                    'fakerClassSelf' => '<test()>',
+                    'fakerClassWithMethod' => '<test()>',
+                    'fakerClassThreeArgs' => '<test(null, "'.ValidAnnotationTester::class.'", "fakerClassThreeArgs")>',
+                    'fakerService' => '<test()>',
                     'fakerValueAsArgs' => '<test("myValue")>'
                 ]
             ]

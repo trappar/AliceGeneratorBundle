@@ -5,10 +5,10 @@ services:
         tags:
             - { name: console.command }
 
-    faker.provider.one_arg:
-        class: Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\OneArgProvider
+    faker.provider.custom:
+        class: Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\CustomProvider
         tags:
             - { name: trappar_alice_generator.faker.provider }
 
-    faker.provider.two_arg:
-        class: Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\TwoArgProvider
+    faker.provider.service:
+        class: Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\ServiceProvider

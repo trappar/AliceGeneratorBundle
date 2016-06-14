@@ -37,12 +37,6 @@ class InvalidAnnotationTester
      */
     public $invalidMultipleAnnotations;
 
-    /**
-     * @Fixture\Faker("test")
-     */
-    public function validFakerOnMethod()
-    {
-    }
 
     public function invalidFakerOnMethodNoAnnotation()
     {

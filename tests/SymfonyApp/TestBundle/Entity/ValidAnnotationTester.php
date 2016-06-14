@@ -37,13 +37,25 @@ class ValidAnnotationTester
 
     /**
      * @ORM\Column
-     * @Fixture\Faker("test", class="Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\NoArgProvider")
+     * @Fixture\Faker("test", class="ValidAnnotationTester")
      */
-    public $fakerClass;
+    public $fakerClassSelf;
 
     /**
      * @ORM\Column
-     * @Fixture\Faker("test", service="faker.provider.two_arg")
+     * @Fixture\Faker("test", class="Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\ArgTestProvider::noArgs")
+     */
+    public $fakerClassWithMethod;
+
+    /**
+     * @ORM\Column
+     * @Fixture\Faker("test", class="Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\DataFixtures\Faker\Provider\ArgTestProvider::threeArgs")
+     */
+    public $fakerClassThreeArgs;
+
+    /**
+     * @ORM\Column
+     * @Fixture\Faker("test", service="faker.provider.service")
      */
     public $fakerService;
 
@@ -58,4 +70,12 @@ class ValidAnnotationTester
      * @Fixture\Ignore()
      */
     public $fakerIgnore;
+
+    /**
+     * @Fixture\Faker("test")
+     */
+    public static function toFixture()
+    {
+        return [];
+    }
 }
