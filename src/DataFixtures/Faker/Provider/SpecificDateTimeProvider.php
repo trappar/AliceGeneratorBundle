@@ -6,7 +6,20 @@ class SpecificDateTimeProvider
 {
     public static function toFixture(\DateTime $dateTime)
     {
-        $dateTime = "<(new \\DateTime(\"{$dateTime->format('Y-m-d H:i:s')}\"))>";
-        return str_replace(' 00:00:00', '', $dateTime);
+        $formatted = $dateTime->format('Y-m-d H:i:s');
+
+        if (strpos($formatted, ' 00:00:00') !== false) {
+            $formatted = str_replace(' 00:00:00', '', $dateTime->format('Y-m-d H:i:s'));
+            return sprintf(
+                '<(new \DateTime("%s"))>',
+                $formatted
+            );
+        } else {
+            return sprintf(
+                '<(new \DateTime("%s", new \DateTimeZone("%s")))>',
+                str_replace(' 00:00:00', '', $dateTime->format('Y-m-d H:i:s')),
+                $dateTime->getTimezone()->getName()
+            );
+        }
     }
 }
