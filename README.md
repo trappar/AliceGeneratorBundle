@@ -75,6 +75,9 @@ Use your UI to create your data, let this bundle do the hard part, and then twea
     1. [Custom Fixture Generation Console Command](src/Resources/doc/advanced-usage.md#custom-fixture-generation-console-command)
     2. [Fixture Generation Contexts](src/Resources/doc/advanced-usage.md#fixture-generation-contexts)
 4. [Annotations](src/Resources/doc/annotations.md)
+    1. [Data](src/Resources/doc/annotations.md#data-annotation)
+    2. [Faker](src/Resources/doc/annotations.md#faker-annotation)
+    3. [Ignore](src/Resources/doc/annotations.md#ignore-annotation)
 5. [Custom Providers](src/Resources/doc/custom-providers.md)
 6. [Resources](#resources)
 
