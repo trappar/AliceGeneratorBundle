@@ -123,6 +123,9 @@ See more in [Advanced Usage](src/Resources/doc/advanced-usage.md)
 ## Resources
 
 * [Changelog](CHANGELOG.md)
+* [AliceBundle](https://github.com/hautelook/AliceBundle)
+* [Alice](https://github.com/nelmio/alice)
+* [Faker](https://github.com/fzaninotto/Faker)
 
 ## Credits
 
