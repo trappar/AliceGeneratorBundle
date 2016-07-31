@@ -9,8 +9,8 @@ You have probably already read about one solution this bundle offers for this pr
 have an object type returned from many places in your database, and you would like it to be handled the same everywhere. 
 
 This is why this bundle offers a custom provider feature, which will be very familiar to anyone who's used
-AliceBundle's Custom Faker Providers. Create a custom provider to accept a particular object type, and any time an
-an object of that type is found on a entity's property it will use your custom provider code to create the fixture
+AliceBundle's Custom Faker Providers. Create a custom provider to accept a particular object type, and any time
+an object of that type is found on an entity's property it will use your custom provider code to create the fixture
 representation of it.
 
 *Side note: Since `DateTime` objects appear in entities quite often, we include a custom provider for it in this bundle.
