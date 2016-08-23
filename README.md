@@ -1,135 +1,83 @@
 AliceGeneratorBundle
 ===========
 
-A [Symfony](http://symfony.com) bundle to recursively convert existing [Doctrine](http://doctrine-project.org) entities into
-[Alice](https://github.com/nelmio/alice) Fixtures.
+This bundle integrates the [AliceGenerator](https://github.com/trappar/AliceGenerator) library into Symfony.
 
-## Why?
+## Introduction
 
-Sometimes you find yourself working on a large project with many tables where there are no existing fixtures.
-In this case even though Alice makes fixtures much easier to write, that process can still be extremely time consuming.
+TrapparAliceGeneratorBundle allows you to generate Alice Fixtures from your existing data.
 
-This bundle proposes an alternate starting point - *automatically generate fixtures from your existing data.*
+You can learn more in the [documentation for the standalone library](https://github.com/trappar/AliceGenerator).
 
-This opens up a whole new, much faster way to get your test data established... just enter it in your user interface!
+## Table of Contents
 
-## Example
-
-Let's say you have the following entities
-
-```php
-// AppBundle/Entity/Post
-class Post
-{
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    /** @ORM\Column(name="title", type="string", length=255) */
-    private $title;
-    /** @ORM\Column(name="bodya", type="text") */
-    private $body;
-    /** @ORM\ManyToOne(targetEntity="User", inversedBy="posts") */
-    private $postedBy;
-}
-
-class User
-{
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    /** @ORM\Column(name="username", type="string", length=100, unique=true) */
-    private $username;
-}
-```
-
-This bundle let's you turn that directly into...
-
-```yaml
-AppBundle\Entity\Post:
-    Post-1:
-        title: 'Is Making Fixtures Too Time Consuming'
-        body: 'Check out AliceBundle!'
-        postedBy: '@User-1'
-    Post-2:
-        title: 'Too Much Data to Hand Write?'
-        body: 'Check out AliceGeneratorBundle!'
-        postedBy: '@User-1'
-AppBundle\Entity\User:
-    User-1:
-        username: testUser
-```
-
-Use your UI to create your data, let this bundle do the hard part, and then tweak until you've got perfect fixtures :)
-
-## Documentation
-
-1. [Install](#installation)
-2. [Basic usage](#basic-usage)
-3. [Advanced Usage](src/Resources/doc/advanced-usage.md)
-    1. [Custom Fixture Generation Console Command](src/Resources/doc/advanced-usage.md#custom-fixture-generation-console-command)
-    2. [Fixture Generation Contexts](src/Resources/doc/advanced-usage.md#fixture-generation-contexts)
-4. [Annotations](src/Resources/doc/annotations.md)
-    1. [Data](src/Resources/doc/annotations.md#data-annotation)
-    2. [Faker](src/Resources/doc/annotations.md#faker-annotation)
-    3. [Ignore](src/Resources/doc/annotations.md#ignore-annotation)
-5. [Custom Providers](src/Resources/doc/custom-providers.md)
-6. [Resources](#resources)
+* [Installation](#installation)
+* [Configuration](#configuration)
+  * [Full Configuration Reference](src/Trappar/AliceGeneratorBundle/Resources/doc/configuration.md)
+* [Usage](#usage)
+* [Resources](#resources)
+* [Credits](#credits)
+* [License](#license)
 
 ## Installation
 
-This bundle is intended to be used alongside the [AliceBundle](https://github.com/hautelook/AliceBundle). You should have
-a solid understanding of how that ecosystem works before installing this bundle.
-
-You can use [Composer](https://getcomposer.org/) to install the bundle to your project:
-
 ```bash
-composer require --dev trappar/alice-generator-bundle
+composer require trappar/alice-generator-bundle
 ```
 
 Then, enable the bundle by updating your `app/AppKernel.php` file to enable the bundle:
 
 ```php
 <?php
-// app/AppKernel.php
+// in AppKernel::registerBundles()
 
-public function registerBundles()
-{
-    //...
-    if (in_array($this->getEnvironment(), ['dev', 'test'])) {
-        //...
-        $bundles[] = new Trappar\AliceGeneratorBundle\TrapparAliceGeneratorBundle();
-    }
-
-    return $bundles;
-}
+$bundles = array(
+    // ...
+    new Trappar\AliceGeneratorBundle\TrapparAliceGeneratorBundle()
+    // ...
+);
 ```
 
-## Basic usage
+## Configuration
 
-There are two primary ways to use this bundle.
+TrapparAliceGeneratorBundle requires no initial configuration to get you started.
 
-1. Use the `trappar_alice_generator.fixture_generator` service's `generateYaml` method directly. You can pass a single entity or an
-array/Collection of any number of entities to this and it will produce a string of yaml fixtures.
-2. Create a console command to handle fixture generation.
+For all available configuration options, please see the [configuration reference](src/Trappar/AliceGeneratorBundle/Resources/doc/configuration.md).
 
-See more in [Advanced Usage](src/Resources/doc/advanced-usage.md)
+## Usage
+
+The main method for using this bundle is the included command line application. Use this by running:
+
+```bash
+console generate:fixtures
+```
+
+And simply follow along with the prompts.
+
+You can also request the FixtureGenerator as a service from the container:
+
+```php
+$fixtureGenerator = $container->get('trappar_alice_generator.fixture_generator');
+$yaml = $fixtureGenerator->generateYaml($entities);
+```
+
+Learn more in the [documentation for the dedicated library](https://github.com/trappar/AliceGenerator/blob/master/doc/usage.md).
 
 ## Resources
 
 * [Changelog](CHANGELOG.md)
-* [AliceBundle](https://github.com/hautelook/AliceBundle)
+* [AliceGenerator](https://github.com/trappar/AliceGenerator)
 * [Alice](https://github.com/nelmio/alice)
+* [AliceBundle](https://github.com/hautelook/AliceBundle)
 * [Faker](https://github.com/fzaninotto/Faker)
 
 ## Credits
 
-This bundle was developped by [Jeff Way](https://github.com/trappar) with quite a lot of inspiration from [AliceBundle](https://github.com/hautelook/AliceBundle).
+This bundle was developped by [Jeff Way](https://github.com/trappar) with quite a lot of inspiration from:
+
+* [AliceBundle](https://github.com/hautelook/AliceBundle)
+* [JMSSerializerBundle](https://github.com/schmittjoh/JMSSerializerBundle)
+* [SensioGeneratorBundle](https://github.com/sensiolabs/SensioGeneratorBundle)
 
 [Other contributors](https://github.com/trappar/AliceGeneratorBundle/graphs/contributors).
 

@@ -1,33 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit colors="true"
-         bootstrap="tests/SymfonyApp/bootstrap.php"
-        >
-
+<phpunit bootstrap="tests/bootstrap.php" colors="true">
     <php>
-        <server name="KERNEL_DIR" value="tests/SymfonyApp" />
+        <server name="KERNEL_DIR" value="tests/Trappar/AliceGeneratorBundle/SymfonyApp" />
     </php>
 
-    <logging>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="true" />
-        <log type="coverage-clover" target="coverage.xml" />
-    </logging>
-
     <testsuites>
-        <testsuite name="AliceGeneratorBundle Test Suite">
-            <directory>./tests</directory>
+        <testsuite name="AliceGeneratorBundle">
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./</directory>
-            <exclude>
-                <directory>./old</directory>
-                <directory>./vendor</directory>
-                <directory>./tests</directory>
-                <directory>./src/Resources</directory>
-            </exclude>
+            <directory>src</directory>
         </whitelist>
     </filter>
-
 </phpunit>

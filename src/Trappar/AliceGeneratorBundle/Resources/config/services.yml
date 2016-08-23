@@ -1,0 +1,121 @@
+services:
+    # Metadata Drivers
+    trappar_alice_generator.metadata.file_locator:
+        public: false
+        class: Metadata\Driver\FileLocator
+
+    trappar_alice_generator.metadata.yaml_driver:
+        public: false
+        class: Trappar\AliceGenerator\Metadata\Driver\YamlDriver
+        arguments: ['@trappar_alice_generator.metadata.file_locator']
+
+    trappar_alice_generator.metadata.annotation_driver:
+        public: false
+        class: Trappar\AliceGenerator\Metadata\Driver\AnnotationDriver
+        arguments: ['@annotation_reader']
+
+    trappar_alice_generator.metadata.chain_driver:
+        public: false
+        class: Metadata\Driver\DriverChain
+        arguments:
+            - ['@trappar_alice_generator.metadata.yaml_driver', '@trappar_alice_generator.metadata.annotation_driver']
+
+    trappar_alice_generator.metadata_driver:
+        alias: trappar_alice_generator.metadata.chain_driver
+
+    trappar_alice_generator.metadata.lazy_loading_driver:
+        public: false
+        class: Metadata\Driver\LazyLoadingDriver
+        arguments:
+            - '@service_container'
+            - 'trappar_alice_generator.metadata_driver'
+
+    # Metadata Factory
+    trappar_alice_generator.metadata.factory:
+        public: false
+        class: Metadata\MetadataFactory
+        arguments: ['@trappar_alice_generator.metadata.lazy_loading_driver']
+
+    # Metadata Resolvers Faker
+    trappar_alice_generator.metadata.resolver.faker.array:
+        public: false
+        class: Trappar\AliceGenerator\Metadata\Resolver\Faker\ArrayFakerResolver
+
+    trappar_alice_generator.metadata.resolver.faker.callback:
+        public: false
+        class: Trappar\AliceGenerator\Metadata\Resolver\Faker\CallbackFakerResolver
+
+    trappar_alice_generator.metadata.resolver.faker.no_arg:
+        public: false
+        class: Trappar\AliceGenerator\Metadata\Resolver\Faker\NoArgFakerResolver
+
+    trappar_alice_generator.metadata.resolver.faker.value_as_arg:
+        public: false
+        class: Trappar\AliceGenerator\Metadata\Resolver\Faker\ValueAsArgFakerResolver
+
+    trappar_alice_generator_bundle.metadata.resolver.faker.service:
+        public: false
+        class: Trappar\AliceGeneratorBundle\Metadata\Resolver\Faker\ServiceFakerResolver
+        arguments: ['@service_container']
+
+    # Metadata Resolvers
+    trappar_alice_generator.metadata.resolver:
+        public: false
+        class: Trappar\AliceGenerator\Metadata\Resolver\MetadataResolver
+        arguments:
+            -
+                - '@trappar_alice_generator.metadata.resolver.faker.array'
+                - '@trappar_alice_generator.metadata.resolver.faker.callback'
+                - '@trappar_alice_generator.metadata.resolver.faker.no_arg'
+                - '@trappar_alice_generator.metadata.resolver.faker.value_as_arg'
+                - '@trappar_alice_generator_bundle.metadata.resolver.faker.service'
+
+    # Persisters
+    trappar_alice_generator.persister.doctrine:
+        public: false
+        class: Trappar\AliceGenerator\Persister\DoctrinePersister
+        arguments: ['@doctrine.orm.entity_manager']
+
+    # Object Handlers
+    trappar_alice_generator.object_handler.collection:
+        public: false
+        class: Trappar\AliceGenerator\ObjectHandler\CollectionHandler
+
+    trappar_alice_generator.object_handler.date_time:
+        public: false
+        class: Trappar\AliceGenerator\ObjectHandler\DateTimeHandler
+
+    # Object Handler Registries
+    trappar_alice_generator.object_handler_registry:
+        public: false
+        class: Trappar\AliceGenerator\ObjectHandlerRegistry
+        arguments:
+            -
+                - '@trappar_alice_generator.object_handler.collection'
+                - '@trappar_alice_generator.object_handler.date_time'
+
+    # Yaml Writer
+    trappar_alice_generator.yaml_writer:
+        public: false
+        class: Trappar\AliceGenerator\YamlWriter
+
+    # Fixture Generator
+    trappar_alice_generator.fixture_generator:
+        class: Trappar\AliceGenerator\FixtureGenerator
+        arguments:
+            - '@trappar_alice_generator.metadata.factory'
+            - '@trappar_alice_generator.persister.doctrine'
+            - '@trappar_alice_generator.metadata.resolver'
+            - '@trappar_alice_generator.object_handler_registry'
+            - '@trappar_alice_generator.yaml_writer'
+
+    # Command
+    trappar_alice_generator.command.generate_fixtures:
+        public: false
+        class: Trappar\AliceGeneratorBundle\Command\GenerateFixturesCommand
+        tags: [ { name: console.command } ]
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@kernel'
+            - '@trappar_alice_generator.fixture_generator'
+            - '@filesystem'

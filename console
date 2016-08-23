@@ -4,8 +4,8 @@
 // Debug only
 set_time_limit(0);
 
-require_once __DIR__ . '/tests/SymfonyApp/bootstrap.php';
-require_once __DIR__ . '/tests/SymfonyApp/AppKernel.php';
+require_once __DIR__ . '/tests/bootstrap.php';
+require_once __DIR__ . '/tests/Trappar/AliceGeneratorBundle/SymfonyApp/AppKernel.php';
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;

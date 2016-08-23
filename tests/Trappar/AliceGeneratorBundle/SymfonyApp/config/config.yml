@@ -1,0 +1,34 @@
+imports:
+    - { resource: services.yml }
+
+framework:
+    secret: test
+    form: ~
+    validation:
+        enabled: true
+        enable_annotations: true
+    session: ~
+    test: ~
+
+doctrine:
+    orm:
+        default_entity_manager: default
+        entity_managers:
+            default:
+                connection: default
+                mappings:
+                    TestBundle: ~
+    dbal:
+        connections:
+            default:
+                driver: pdo_sqlite
+                path: "%kernel.cache_dir%/db.sqlite"
+                charset: UTF8
+
+trappar_alice_generator:
+    metadata:
+        auto_detection: false
+        directories:
+            entities:
+                namespace_prefix: 'Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\Entity'
+                path: '%kernel.root_dir%/config/alice-generator'
