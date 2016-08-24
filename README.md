@@ -1,5 +1,5 @@
-AliceGeneratorBundle
-===========
+AliceGeneratorBundle [![Build Status](https://travis-ci.org/trappar/AliceGeneratorBundle.svg?branch=master)](https://travis-ci.org/trappar/AliceGeneratorBundle)
+====================
 
 This bundle integrates the [AliceGenerator](https://github.com/trappar/AliceGenerator) library into Symfony.
 

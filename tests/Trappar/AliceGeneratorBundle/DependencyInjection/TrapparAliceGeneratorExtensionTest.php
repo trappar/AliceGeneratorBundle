@@ -2,55 +2,65 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\DependencyInjection;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
+use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Trappar\AliceGenerator\Exception\RuntimeException;
 use Trappar\AliceGeneratorBundle\DependencyInjection\TrapparAliceGeneratorExtension;
 
-class TrapparAliceGeneratorExtensionTest extends TestCase
+class TrapparAliceGeneratorExtensionTest extends AbstractExtensionTestCase
 {
+    protected function getContainerExtensions()
+    {
+        return array(
+            new TrapparAliceGeneratorExtension()
+        );
+    }
+
     public function testAutoDetectionDisabled()
     {
-        $fileLocatorDefinition = $this->getDefinition();
-        $fileLocatorDefinition->expects($this->once())->method('addArgument')->with([]);
+        $this->setBundles();
+        $this->load([
+            'metadata' => [
+                'auto_detection' => false
+            ]
+        ]);
 
-        $this->runConfiguration(
-            [
-                'trappar_alice_generator' => [
-                    'metadata' => [
-                        'auto_detection' => false
-                    ]
-                ]
-            ],
-            $fileLocatorDefinition,
-            $this->getDefinition()
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'trappar_alice_generator.metadata.file_locator',
+            0,
+            []
         );
     }
 
     public function testWithCustomDirectory()
     {
-        $fileLocatorDefinition = $this->getDefinition();
-        $fileLocatorDefinition->expects($this->once())->method('addArgument')
-            ->with($this->callback(function ($array) {
-                return count($array) == 2 && $array['some_prefix'] == realpath(__DIR__ . '/../SymfonyApp/TestBundle');
-            }));
-
-        $this->runConfiguration(
-            [
-                'trappar_alice_generator' => [
-                    'metadata' => [
-                        'directories' => [
-                            'myname' => [
-                                'namespace_prefix' => 'some_prefix',
-                                'path'             => '@TestBundle'
-                            ]
-                        ]
+        $this->setBundles();
+        $this->load([
+            'metadata' => [
+                'auto_detection' => false,
+                'directories' => [
+                    'myname' => [
+                        'namespace_prefix' => 'some_prefix',
+                        'path'             => '@TestBundle'
                     ]
                 ]
-            ],
-            $fileLocatorDefinition,
-            $this->getDefinition()
+            ]
+        ]);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'trappar_alice_generator.metadata.file_locator',
+            0,
+            ['some_prefix' => realpath(__DIR__ . '/../SymfonyApp/TestBundle')]
+        );
+    }
+
+    public function testAutoDetectionEnabled()
+    {
+        $this->setBundles();
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'trappar_alice_generator.metadata.file_locator',
+            0
         );
     }
 
@@ -58,78 +68,44 @@ class TrapparAliceGeneratorExtensionTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
 
-        $this->runConfiguration(
-            [
-                'trappar_alice_generator' => [
-                    'metadata' => [
-                        'directories' => [
-                            'myname' => [
-                                'namespace_prefix' => 'some_prefix',
-                                'path'             => '@Blah'
-                            ]
-                        ]
+        $this->setBundles();
+        $this->load([
+            'metadata' => [
+                'directories' => [
+                    'myname' => [
+                        'namespace_prefix' => 'some_prefix',
+                        'path'             => '@Blah'
                     ]
                 ]
-            ],
-            $this->getDefinition(), $this->getDefinition()
-        );
+            ]
+        ]);
     }
 
     public function testWithCustomYamlOptions()
     {
-        $yamlWriterDefinition = $this->getDefinition();
-        $yamlWriterDefinition
-            ->expects($this->exactly(2))
-            ->method('addArgument')
-            ->withConsecutive([3], [1]);
+        $this->setBundles();
+        $this->load([
+            'yaml' => [
+                'indent' => 1
+            ]
+        ]);
 
-        $this->runConfiguration(
-            [
-                'trappar_alice_generator' => [
-                    'yaml' => [
-                        'indent' => 1
-                    ]
-                ]
-            ],
-            $this->getDefinition(),
-            $yamlWriterDefinition
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'trappar_alice_generator.yaml_writer',
+            0,
+            3
+        );
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'trappar_alice_generator.yaml_writer',
+            1,
+            1
         );
     }
 
-    private function runConfiguration($config, $fileLocatorDefinition, $yamlWriterDefinition)
+    private function setBundles()
     {
-        $extension        = new TrapparAliceGeneratorExtension();
-        $containerBuilder = $this->getContainerBuilderMock();
-
-        $containerBuilder->method('getDefinition')
-            ->will($this->returnValueMap([
-                ['trappar_alice_generator.metadata.file_locator', $fileLocatorDefinition],
-                ['trappar_alice_generator.yaml_writer', $yamlWriterDefinition]
-            ]));
-
-        $extension->load($config, $containerBuilder);
-    }
-
-    private function getContainerBuilderMock()
-    {
-        $containerBuilder = $this->createMock(ContainerBuilder::class);
-
-        $containerBuilder
-            ->expects($this->atLeastOnce())
-            ->method('setDefinition');
-
-        $containerBuilder->method('getParameter')->with('kernel.bundles')->willReturn([
+        $this->setParameter('kernel.bundles', [
             'TestBundle' => 'Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\TestBundle'
         ]);
-
-        return $containerBuilder;
-    }
-
-    private function getDefinition()
-    {
-        $definition = $this->createMock(Definition::class);
-        $definition->method('addArgument')->willReturnSelf();
-
-        return $definition;
     }
 }

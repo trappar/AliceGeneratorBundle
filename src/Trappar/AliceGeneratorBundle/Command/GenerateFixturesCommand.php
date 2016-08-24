@@ -375,8 +375,6 @@ class GenerateFixturesCommand extends ContainerAwareCommand
                         return $shortEntityName;
                     }
                 }
-
-                return null;
             }, $entities))
         );
     }
