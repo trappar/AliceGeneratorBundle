@@ -14,21 +14,25 @@ final class CompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         // Add Faker Resolvers to MetadataResolver
-        $taggedServices = $container->findTaggedServiceIds('trappar_alice_generator.faker_resolver');
-        $resolverDefinition = $container->getDefinition('trappar_alice_generator.metadata.resolver');
-        $resolvers = [];
-        foreach ($taggedServices as $resolverId => $tags) {
-            $resolvers[] = new Reference($resolverId);
+        if ($container->hasDefinition('trappar_alice_generator.metadata.resolver')) {
+            $taggedServices     = $container->findTaggedServiceIds('trappar_alice_generator.faker_resolver');
+            $resolverDefinition = $container->getDefinition('trappar_alice_generator.metadata.resolver');
+            $resolvers          = [];
+            foreach ($taggedServices as $resolverId => $tags) {
+                $resolvers[] = new Reference($resolverId);
+            }
+            $resolverDefinition->addMethodCall('addFakerResolvers', [$resolvers]);
         }
-        $resolverDefinition->addMethodCall('addFakerResolvers', [$resolvers]);
 
         // Add Object Handlers to ObjectHandlerRegistry
-        $taggedServices = $container->findTaggedServiceIds('trappar_alice_generator.object_handler');
-        $handlerDefinition = $container->getDefinition('trappar_alice_generator.object_handler_registry');
-        $handlers = [];
-        foreach ($taggedServices as $handlerId => $tags) {
-            $handlers[] = new Reference($handlerId);
+        if ($container->hasDefinition('trappar_alice_generator.object_handler_registry')) {
+            $taggedServices    = $container->findTaggedServiceIds('trappar_alice_generator.object_handler');
+            $handlerDefinition = $container->getDefinition('trappar_alice_generator.object_handler_registry');
+            $handlers          = [];
+            foreach ($taggedServices as $handlerId => $tags) {
+                $handlers[] = new Reference($handlerId);
+            }
+            $handlerDefinition->addMethodCall('registerHandlers', [$handlers]);
         }
-        $handlerDefinition->addMethodCall('registerHandlers', [$handlers]);
     }
 }

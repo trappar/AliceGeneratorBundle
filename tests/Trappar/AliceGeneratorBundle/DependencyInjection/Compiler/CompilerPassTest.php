@@ -2,37 +2,44 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\DependencyInjection\Compiler;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Trappar\AliceGeneratorBundle\DependencyInjection\Compiler\CompilerPass;
 
-class CompilerPassTest extends TestCase
+class CompilerPassTest extends AbstractCompilerPassTestCase
 {
     public function testProcess()
     {
-        $providerPass = new CompilerPass();
+        $this->setDefinition('trappar_alice_generator.metadata.resolver', new Definition());
+        $this->setDefinition('trappar_alice_generator.object_handler_registry', new Definition());
 
-        $this->assertInstanceOf(CompilerPassInterface::class, $providerPass);
+        $testFakerResolver = new Definition();
+        $testFakerResolver->addTag('trappar_alice_generator.faker_resolver');
+        $this->setDefinition('custom_faker_resolver', $testFakerResolver);
 
-        $resolverDefinition = $this->getMockBuilder(Definition::class)->getMock();
-        $resolverDefinition->expects($this->exactly(2))->method('addMethodCall');
+        $testObjectHandler = new Definition();
+        $testObjectHandler->addTag('trappar_alice_generator.object_handler');
+        $this->setDefinition('custom_object_handler', $testObjectHandler);
 
-        $handlerDefinition = clone $resolverDefinition;
+        $this->compile();
 
-        $containerBuilder = $this->getMockBuilder(ContainerBuilder::class)
-            ->setMethods(['getDefinition', 'findTaggedServiceIds'])
-            ->getMock();
+        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
+            'trappar_alice_generator.metadata.resolver',
+            'addFakerResolvers',
+            [[new Reference('custom_faker_resolver')]]
+        );
 
-        $containerBuilder->method('getDefinition')
-            ->will($this->onConsecutiveCalls($resolverDefinition, $handlerDefinition));
-        $containerBuilder->method('findTaggedServiceIds')->willReturn(['foo', 'bar']);
+        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
+            'trappar_alice_generator.object_handler_registry',
+            'registerHandlers',
+            [[new Reference('custom_object_handler')]]
+        );
+    }
 
-        $containerBuilder->expects($this->exactly(2))
-            ->method('findTaggedServiceIds');
-
-        /** @var ContainerBuilder $containerBuilder */
-        $providerPass->process($containerBuilder);
+    protected function registerCompilerPass(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new CompilerPass());
     }
 }
