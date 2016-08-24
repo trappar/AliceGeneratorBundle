@@ -81,7 +81,7 @@ class Validators
         $value = preg_replace('~^\s*\{?~', '{', $value, 1);
         $value = preg_replace('~\}?\s*$~', '}', $value, 1);
 
-        $parsed = Yaml::parse($value, Yaml::DUMP_EXCEPTION_ON_INVALID_TYPE);
+        $parsed = Yaml::parse($value);
 
         if (!count($parsed)) {
             throw new \InvalidArgumentException('You must include at least one condition.');
