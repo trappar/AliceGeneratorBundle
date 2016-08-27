@@ -91,7 +91,7 @@ class GenerateFixturesCommand extends ContainerAwareCommand
         $configuredInteractively = !$input->getOption('entities');
 
         $this->writeSection($output, 'Welcome to the Alice fixture generator');
-        $output->writeln('This command helps you generate Alice fixtures based on your Doctrine2 entities.');
+        $output->writeln('This command helps generate Alice fixtures based on existing Doctrine entities.');
 
         if (!$input->getOption('entities')) {
             $entitiesString = $this->askForEntityConfig($output);

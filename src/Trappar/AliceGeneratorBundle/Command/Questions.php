@@ -95,7 +95,7 @@ class Questions
 
     public function askIfAddAsEntityConstraints()
     {
-        $question = $this->getQuestion('Add as entity contraints', 'no');
+        $question = $this->getQuestion('Add as object constraints', 'no');
         $question->setAutocompleterValues(['yes', 'no']);
         $question->setValidator([Validators::class, 'validateYesNo']);
 
