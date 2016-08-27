@@ -31,11 +31,11 @@ Then, enable the bundle by updating your `app/AppKernel.php` file to enable the 
 <?php
 // in AppKernel::registerBundles()
 
-$bundles = array(
+if (in_array($this->getEnvironment(), ['dev', 'test'])) {
     // ...
-    new Trappar\AliceGeneratorBundle\TrapparAliceGeneratorBundle()
+    $bundles[] = new Trappar\AliceGeneratorBundle\TrapparAliceGeneratorBundle();
     // ...
-);
+}
 ```
 
 ## Configuration
