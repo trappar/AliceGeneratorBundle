@@ -66,6 +66,7 @@ Learn more in the [documentation for the dedicated library](https://github.com/t
 ## Resources
 
 * [Changelog](CHANGELOG.md)
+* [Upgrade Guide](UPGRADING.md)
 * [AliceGenerator](https://github.com/trappar/AliceGenerator)
 * [Alice](https://github.com/nelmio/alice)
 * [AliceBundle](https://github.com/hautelook/AliceBundle)
