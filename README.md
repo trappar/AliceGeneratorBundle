@@ -22,7 +22,7 @@ You can learn more in the [documentation for the standalone library](https://git
 ## Installation
 
 ```bash
-composer require trappar/alice-generator-bundle
+composer require --dev trappar/alice-generator-bundle
 ```
 
 Then, enable the bundle by updating your `app/AppKernel.php` file to enable the bundle:
