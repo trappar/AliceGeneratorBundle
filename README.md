@@ -74,7 +74,7 @@ Learn more in the [documentation for the dedicated library](https://github.com/t
 
 ## Credits
 
-This bundle was developped by [Jeff Way](https://github.com/trappar) with quite a lot of inspiration from:
+This bundle was developed by [Jeff Way](https://github.com/trappar) with quite a lot of inspiration from:
 
 * [AliceBundle](https://github.com/hautelook/AliceBundle)
 * [JMSSerializerBundle](https://github.com/schmittjoh/JMSSerializerBundle)
