@@ -2,6 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Command;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -25,9 +26,9 @@ class GenerateFixturesCommand extends ContainerAwareCommand
     ];
 
     /**
-     * @var EntityManager
+     * @var ManagerRegistry
      */
-    private $em;
+    private $doctrine;
     /**
      * @var KernelInterface
      */
@@ -53,15 +54,19 @@ class GenerateFixturesCommand extends ContainerAwareCommand
      * @var Questions
      */
     private $questions;
+    /**
+     * @var EntityManager
+     */
+    private $em;
 
     public function __construct(
-        EntityManager $em,
+        ManagerRegistry $managerRegistry,
         KernelInterface $kernel,
         FixtureGenerator $fixtureGenerator,
         Filesystem $filesystem
     )
     {
-        $this->em               = $em;
+        $this->doctrine               = $managerRegistry;
         $this->kernel           = $kernel;
         $this->fixtureGenerator = $fixtureGenerator;
         $this->filesystem       = $filesystem;
@@ -77,13 +82,19 @@ class GenerateFixturesCommand extends ContainerAwareCommand
             ->setDescription('Generates fixtures based on Doctrine entities.')
             ->addOption('entities', null, InputOption::VALUE_REQUIRED, 'The entities which fixtures will be generator for')
             ->addOption('depth', 'd', InputOption::VALUE_OPTIONAL, 'Maximum depth to traverse through entities relations', self::DEFAULT_DEPTH)
-            ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Where to write the generated YAML file', $this->getDefaultOutputPath());
+            ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Where to write the generated YAML file', null)
+            ->addOption('manager', 'em', InputOption::VALUE_REQUIRED, 'Which Doctrine manager to use', 'default');
     }
 
     public function initialize(InputInterface $input, OutputInterface $output)
     {
+        $this->em = $this->doctrine->getManager($input->getOption('manager'));
+
         $this->entityAutocomplete = $this->buildEntityAutocomplete();
         $this->questions          = new Questions($input, $output, $this->getHelperSet());
+        if (!$input->getOption('output')) {
+            $input->setOption('output', $this->getDefaultOutputPath());
+        }
     }
 
     public function interact(InputInterface $input, OutputInterface $output)

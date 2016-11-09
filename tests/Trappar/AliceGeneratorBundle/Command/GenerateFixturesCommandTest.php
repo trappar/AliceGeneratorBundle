@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Tests\Command;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -21,9 +21,9 @@ class GenerateFixturesCommandTest extends KernelTestCase
      */
     private $application;
     /**
-     * @var EntityManager
+     * @var ManagerRegistry
      */
-    private $em;
+    private $doctrine;
 
     public function setUp()
     {
@@ -31,7 +31,7 @@ class GenerateFixturesCommandTest extends KernelTestCase
 
         $this->application = new Application(self::$kernel);
         $this->application->setAutoExit(false);
-        $this->em = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
+        $this->doctrine = static::$kernel->getContainer()->get('doctrine');
     }
 
     /**
@@ -281,7 +281,7 @@ class GenerateFixturesCommandTest extends KernelTestCase
 
     private function getOutputFromCommandForInput($input, FixtureGenerator $fixtureGenerator, Filesystem $filesystem, array $options = [])
     {
-        $generateFixturesCommand = new GenerateFixturesCommand($this->em, static::$kernel, $fixtureGenerator, $filesystem);
+        $generateFixturesCommand = new GenerateFixturesCommand($this->doctrine, static::$kernel, $fixtureGenerator, $filesystem);
 
         $application = new \Symfony\Component\Console\Application();
         $application->add($generateFixturesCommand);
@@ -356,11 +356,12 @@ class GenerateFixturesCommandTest extends KernelTestCase
         $this->runConsole('doctrine:database:drop', ['--force' => true]);
         $this->runConsole('doctrine:schema:create');
 
+        $em = $this->doctrine->getManager();
         foreach ($entities as $entity) {
-            $this->em->persist($entity);
+            $em->persist($entity);
         }
 
-        $this->em->flush();
+        $em->flush();
     }
 
     /**
