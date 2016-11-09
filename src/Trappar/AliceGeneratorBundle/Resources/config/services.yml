@@ -100,13 +100,20 @@ services:
         class: Trappar\AliceGenerator\YamlWriter
 
     # Fixture Generator
-    trappar_alice_generator.fixture_generator:
-        class: Trappar\AliceGenerator\FixtureGenerator
+    trappar_alice_generator.value_visitor:
+        public: false
+        class: Trappar\AliceGenerator\ValueVisitor
         arguments:
             - '@trappar_alice_generator.metadata.factory'
             - '@trappar_alice_generator.persister.doctrine'
             - '@trappar_alice_generator.metadata.resolver'
             - '@trappar_alice_generator.object_handler_registry'
+
+
+    trappar_alice_generator.fixture_generator:
+        class: Trappar\AliceGenerator\FixtureGenerator
+        arguments:
+            - '@trappar_alice_generator.value_visitor'
             - '@trappar_alice_generator.yaml_writer'
 
     # Command
@@ -114,7 +121,7 @@ services:
         class: Trappar\AliceGeneratorBundle\Command\GenerateFixturesCommand
         tags: [ { name: console.command } ]
         arguments:
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine'
             - '@kernel'
             - '@trappar_alice_generator.fixture_generator'
             - '@filesystem'

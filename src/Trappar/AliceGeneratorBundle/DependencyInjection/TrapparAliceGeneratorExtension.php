@@ -56,6 +56,10 @@ class TrapparAliceGeneratorExtension extends ConfigurableExtension
             ->getDefinition('trappar_alice_generator.yaml_writer')
             ->addArgument($config['yaml']['inline'])
             ->addArgument($config['yaml']['indent']);
+
+        $container
+            ->getDefinition('trappar_alice_generator.value_visitor')
+            ->addArgument($config['strictTypeChecking']);
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)

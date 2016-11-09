@@ -12,11 +12,13 @@ class FixtureGeneratorTests extends KernelTestCase
         static::bootKernel();
         $fg = static::$kernel->getContainer()->get('trappar_alice_generator.fixture_generator');
 
-        $metadataResolver = $this->readAttribute($fg, 'metadataResolver');
+        $valueVisitor = $this->readAttribute($fg, 'valueVisitor');
+
+        $metadataResolver = $this->readAttribute($valueVisitor, 'metadataResolver');
         $fakerResolvers = $this->readAttribute($metadataResolver, 'fakerResolvers');
         $this->assertCount(5, $fakerResolvers);
 
-        $objectHandlerRegistry = $this->readAttribute($fg, 'objectHandlerRegistry');
+        $objectHandlerRegistry = $this->readAttribute($valueVisitor, 'objectHandlerRegistry');
         $handlers = $this->readAttribute($objectHandlerRegistry, 'handlers');
         $this->assertCount(3, $handlers);
         $this->assertInstanceOf(CustomHandler::class, $handlers[0]);

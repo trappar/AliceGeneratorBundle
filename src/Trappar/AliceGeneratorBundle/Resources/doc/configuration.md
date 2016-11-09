@@ -59,6 +59,8 @@ trappar_alice_generator:
         # These settings directly control the arguments for \Symfony\Component\Yaml\Yaml::dump().
         inline: 3
         indent: 4
+    # See documentation of AliceGenerator here: https://github.com/trappar/AliceGenerator/blob/master/doc/configuration.md#disabling-strict-type-checking
+    strictTypeChecking: true
 ```
 
 [Back to the README](/README.md)

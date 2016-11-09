@@ -102,6 +102,24 @@ class TrapparAliceGeneratorExtensionTest extends AbstractExtensionTestCase
         );
     }
 
+    public function testWithDisabledStrictTypeChecking()
+    {
+        $this->setBundles();
+        $this->load();
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'trappar_alice_generator.value_visitor',
+            4,
+            true
+        );
+
+        $this->load(['strictTypeChecking' => false]);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'trappar_alice_generator.value_visitor',
+            4,
+            false
+        );
+    }
+
     private function setBundles()
     {
         $this->setParameter('kernel.bundles', [

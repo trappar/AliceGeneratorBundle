@@ -39,6 +39,7 @@ class Configuration implements ConfigurationInterface
                     ->integerNode('indent')->defaultValue(4)->end()
                 ->end()
             ->end()
+            ->booleanNode('strictTypeChecking')->defaultValue(true)->end()
         ->end();
 
         return $tb;
