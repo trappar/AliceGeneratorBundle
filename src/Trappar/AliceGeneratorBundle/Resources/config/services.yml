@@ -73,8 +73,8 @@ services:
     # Persisters
     trappar_alice_generator.persister.doctrine:
         public: false
-        class: Trappar\AliceGenerator\Persister\DoctrinePersister
-        arguments: ['@doctrine.orm.entity_manager']
+        class: Trappar\AliceGeneratorBundle\Persister\DoctrinePersister
+        arguments: ['@doctrine']
 
     # Object Handlers
     trappar_alice_generator.object_handler.collection:

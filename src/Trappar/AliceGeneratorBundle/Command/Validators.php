@@ -2,7 +2,7 @@
 
 namespace Trappar\AliceGeneratorBundle\Command;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\Yaml\Yaml;
 
@@ -18,18 +18,18 @@ class Validators
      */
     public static function createBoundValidator($methodName, ...$boundArgs)
     {
-        return function(...$args) use ($methodName, $boundArgs) {
+        return function (...$args) use ($methodName, $boundArgs) {
             return call_user_func_array("self::$methodName", array_merge($boundArgs, $args));
         };
     }
 
-    public static function validateEntity(EntityManager $em, $entityAlias)
+    public static function validateEntity(ManagerRegistry $doctrine, $entityAlias)
     {
         $metadata = null;
 
         if (strlen($entityAlias)) {
             try {
-                $metadata = $em->getClassMetadata($entityAlias);
+                $metadata = $doctrine->getManagerForClass($entityAlias)->getClassMetadata($entityAlias);
             } catch (\Exception $e) {
                 throw new \InvalidArgumentException(sprintf(
                     'Unable to fetch entity information for "%s"',

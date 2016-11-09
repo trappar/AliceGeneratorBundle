@@ -54,10 +54,6 @@ class GenerateFixturesCommand extends ContainerAwareCommand
      * @var Questions
      */
     private $questions;
-    /**
-     * @var EntityManager
-     */
-    private $em;
 
     public function __construct(
         ManagerRegistry $managerRegistry,
@@ -66,7 +62,7 @@ class GenerateFixturesCommand extends ContainerAwareCommand
         Filesystem $filesystem
     )
     {
-        $this->doctrine               = $managerRegistry;
+        $this->doctrine         = $managerRegistry;
         $this->kernel           = $kernel;
         $this->fixtureGenerator = $fixtureGenerator;
         $this->filesystem       = $filesystem;
@@ -82,16 +78,46 @@ class GenerateFixturesCommand extends ContainerAwareCommand
             ->setDescription('Generates fixtures based on Doctrine entities.')
             ->addOption('entities', null, InputOption::VALUE_REQUIRED, 'The entities which fixtures will be generator for')
             ->addOption('depth', 'd', InputOption::VALUE_OPTIONAL, 'Maximum depth to traverse through entities relations', self::DEFAULT_DEPTH)
-            ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Where to write the generated YAML file', null)
-            ->addOption('manager', 'em', InputOption::VALUE_REQUIRED, 'Which Doctrine manager to use', 'default');
+            ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Where to write the generated YAML file', null);
     }
 
     public function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->em = $this->doctrine->getManager($input->getOption('manager'));
+        $entities                = [];
+        $entityNamespaces        = [];
+        $bundleNamesWithEntities = [];
 
-        $this->entityAutocomplete = $this->buildEntityAutocomplete();
-        $this->questions          = new Questions($input, $output, $this->getHelperSet());
+        foreach ($this->doctrine->getManagers() as $manager) {
+            if ($manager instanceof EntityManager) {
+                $configuration           = $manager->getConfiguration();
+                $entities                = array_merge($entities,
+                    $configuration->getMetadataDriverImpl()->getAllClassNames()
+                );
+                $entityNamespaces        = array_merge($entityNamespaces,
+                    $configuration->getEntityNamespaces()
+                );
+                $bundleNamesWithEntities = array_merge($bundleNamesWithEntities,
+                    array_keys($configuration->getEntityNamespaces())
+                );
+            }
+        }
+
+        $this->entityAutocomplete      = array_merge(
+            array_keys($entityNamespaces),
+            array_filter(array_map(function ($entity) use ($entityNamespaces) {
+                foreach ($entityNamespaces as $alias => $entityNamespace) {
+                    $shortEntityName = str_replace($entityNamespace . '\\', $alias . ':', $entity);
+                    if ($shortEntityName != $entity) {
+                        return $shortEntityName;
+                    }
+                }
+
+                return false;
+            }, $entities))
+        );
+        $this->bundleNamesWithEntities = $bundleNamesWithEntities;
+
+        $this->questions = new Questions($input, $output, $this->getHelperSet());
         if (!$input->getOption('output')) {
             $input->setOption('output', $this->getDefaultOutputPath());
         }
@@ -125,7 +151,7 @@ class GenerateFixturesCommand extends ContainerAwareCommand
             while (true) {
                 $output->writeln(array('', 'Where should the generated YAML file be written?'));
 
-                $outputPath = $this->questions->askForOutputDirectory($this->getBundlesNamesWithEntities(), $this->getDefaultOutputPath());
+                $outputPath = $this->questions->askForOutputDirectory($this->bundleNamesWithEntities, $this->getDefaultOutputPath());
 
                 if ($this->filesystem->exists($this->locate($outputPath))) {
                     $output->writeln(array('', 'File already exists, overwrite?'));
@@ -174,7 +200,7 @@ class GenerateFixturesCommand extends ContainerAwareCommand
             ]);
 
             /** @var ClassMetadata $entityMetadata */
-            list($entityAlias, $entityMetadata) = $this->questions->askForEntity($this->em, $this->entityAutocomplete);
+            list($entityAlias, $entityMetadata) = $this->questions->askForEntity($this->doctrine, $this->entityAutocomplete);
 
             if (!$entityMetadata) {
                 if (count($entities) == 0) {
@@ -279,7 +305,7 @@ class GenerateFixturesCommand extends ContainerAwareCommand
             $addToEntityConstraints = (isset($entityConfig[2])) ? $entityConfig[2] : false;
 
             try {
-                $repo = $this->em->getRepository($entityAlias);
+                $repo = $this->doctrine->getManagerForClass($entityAlias)->getRepository($entityAlias);
             } catch (\Exception $e) {
                 $errors[] = $this->getEntitySelectionError('Unable to locate repository', $entityConfig);
                 continue;
@@ -371,25 +397,6 @@ class GenerateFixturesCommand extends ContainerAwareCommand
         $this->filesystem->dumpFile($outputPath, $contents);
     }
 
-    private function buildEntityAutocomplete()
-    {
-        // Bundles with entities are most likely to be at the end of this array, so reverse it!
-        $entities         = $this->em->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
-        $entityNamespaces = $this->em->getConfiguration()->getEntityNamespaces();
-
-        return array_merge(
-            array_keys($entityNamespaces),
-            array_filter(array_map(function ($entity) use ($entityNamespaces) {
-                foreach ($entityNamespaces as $alias => $entityNamespace) {
-                    $shortEntityName = str_replace($entityNamespace . '\\', $alias . ':', $entity);
-                    if ($shortEntityName != $entity) {
-                        return $shortEntityName;
-                    }
-                }
-            }, $entities))
-        );
-    }
-
     /**
      * The implementation of this in FileLocator doesn't allow for files which don't exist, so this is a simple
      * reimplementation of that
@@ -427,22 +434,11 @@ class GenerateFixturesCommand extends ContainerAwareCommand
         return $input->getOption('output') == $this->getDefaultOutputPath();
     }
 
-    private function getBundlesNamesWithEntities()
-    {
-        if (!$this->bundleNamesWithEntities) {
-            $this->bundleNamesWithEntities = array_keys($this->em->getConfiguration()->getEntityNamespaces());
-        }
-
-        return $this->bundleNamesWithEntities;
-    }
-
     private function getDefaultOutputPath()
     {
-        $bundleNames = $this->getBundlesNamesWithEntities();
-
         $defaultOutputPath = false;
-        if (count($bundleNames) > 0) {
-            $suggestedBundle   = $bundleNames[0];
+        if (count($this->bundleNamesWithEntities) > 0) {
+            $suggestedBundle   = $this->bundleNamesWithEntities[0];
             $defaultOutputPath = '@' . $suggestedBundle . self::DEFAULT_OUTPUT_PATH_SUFFIX;
         }
 
