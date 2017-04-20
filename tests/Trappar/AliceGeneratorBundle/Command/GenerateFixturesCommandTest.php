@@ -284,9 +284,19 @@ class GenerateFixturesCommandTest extends KernelTestCase
         $application->add($generateFixturesCommand);
 
         $command = $application->find('generate:fixtures');
-
         $commandTester = new CommandTester($command);
-        $commandTester->setInputs($options->input);
+
+        if (method_exists(CommandTester::class, 'setInputs')) {
+            $commandTester->setInputs($options->input);
+        } else {
+            $stream = fopen('php://memory', 'r+', false);
+            fwrite($stream, implode("\n", $options->input));
+            rewind($stream);
+
+            $helper  = $command->getHelper('question');
+            $helper->setInputStream($stream);
+        }
+
         $commandTester->execute(array_merge(['command' => $command->getName()], $options->options));
 
         return $commandTester->getDisplay(true);
