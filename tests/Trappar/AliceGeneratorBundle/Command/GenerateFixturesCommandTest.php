@@ -50,7 +50,9 @@ class GenerateFixturesCommandTest extends KernelTestCase
             $options->entities = $this->getTestEntities();
         }
         if ($options->input) {
-            $options->input .= str_repeat("\n", 20);
+            for ($i=0; $i<20; $i++) {
+                $options->input[] = '';
+            }
         }
 
         $this->prepareDatabase($options->entities);
@@ -62,12 +64,7 @@ class GenerateFixturesCommandTest extends KernelTestCase
             $this->expectExceptionMessageRegExp($options->exceptionRegex);
         }
 
-        $display = $this->getOutputFromCommandForInput(
-            $options->input,
-            $options->generator,
-            $options->filesystem,
-            $options->options
-        );
+        $display = $this->getOutputFromCommandForInput($options);
 
         if ($options->displayRegex) {
             $this->assertRegExp($options->displayRegex, $display);
@@ -84,49 +81,49 @@ class GenerateFixturesCommandTest extends KernelTestCase
         /** VALIDATION SPECIFIC TESTS **/
         // Invalid selection type
         $options               = new Options();
-        $options->input        = "TestBundle:User\nasdf";
+        $options->input        = ['TestBundle:User', 'asdf'];
         $options->displayRegex = '~invalid selection type~i';
         $data[]                = [$options];
 
         // Invalid ID/integer
         $options               = new Options();
-        $options->input        = "TestBundle:User\nid\nabc";
+        $options->input        = ['TestBundle:User', 'id', 'abc'];
         $options->displayRegex = '~invalid non-int given~i';
         $data[]                = [$options];
 
         // ID list with extra comma
         $options               = new Options();
-        $options->input        = "TestBundle:User\nid\n1,,,2";
+        $options->input        = ['TestBundle:User', 'id', '1,,,2'];
         $options->displayRegex = '~id, \[1, 2\]~i';
         $data[]                = [$options];
 
         // Invalid where conditions
         $options               = new Options();
-        $options->input        = "TestBundle:User\nwhere\ntest\nusername: test";
+        $options->input        = ['TestBundle:User', 'where', 'test', 'username: test'];
         $options->displayRegex = '~malformed inline yaml string~i';
         $data[]                = [$options];
 
         // Where condition returned empty
         $options               = new Options();
-        $options->input        = "TestBundle:User\nwhere\n\nusername: test";
+        $options->input        = ['TestBundle:User', 'where', '', 'username: test'];
         $options->displayRegex = '~at least one condition~i';
         $data[]                = [$options];
 
         // Where condition with non-existent field
         $options               = new Options();
-        $options->input        = "TestBundle:User\nwhere\ntest: test\nusername: test";
+        $options->input        = ['TestBundle:User', 'where', 'test: test', 'username: test'];
         $options->displayRegex = '~unknown field~i';
         $data[]                = [$options];
 
         // Attempt yes/no with garbage
         $options               = new Options();
-        $options->input        = "TestBundle:User\n\nasdf";
+        $options->input        = ['TestBundle:User', '', 'asdf'];
         $options->displayRegex = '~"yes" or "no"~i';
         $data[]                = [$options];
 
         // Output path with wrong extension
         $options               = new Options();
-        $options->input        = "TestBundle:User\n\n\n\n\ntest.exe";
+        $options->input        = ['TestBundle:User', '', '', '', '', 'test.exe'];
         $options->displayRegex = '~must have .yml extension~i';
         $data[]                = [$options];
 
@@ -137,7 +134,7 @@ class GenerateFixturesCommandTest extends KernelTestCase
         $fg->method('generateYaml')->with($this->logicalNot($this->arrayHasKey(2)));
         $options            = new Options();
         $options->generator = $fg;
-        $options->input     = "TestBundle:Post\nid\n1,2";
+        $options->input     = ['TestBundle:Post', 'id', '1,2'];
         $data[]             = [$options];
 
         // Selecting a post by where
@@ -145,32 +142,32 @@ class GenerateFixturesCommandTest extends KernelTestCase
         $fg->method('generateYaml')->with($this->logicalNot($this->arrayHasKey(1)));
         $options            = new Options();
         $options->generator = $fg;
-        $options->input     = "TestBundle:Post\nwhere\ntitle:My Title";
+        $options->input     = ['TestBundle:Post', 'where', 'title: My Title'];
         $data[]             = [$options];
 
         // Overwrite existing file
         $options               = new Options();
         $options->filesystem   = $this->createMockFilesystem(true);
-        $options->input        = "TestBundle:User\n\n\n\n\n\nno";
+        $options->input        = ['TestBundle:User', '', '', '', '', '', 'no'];
         $options->displayRegex = '~file already exists~i';
         $data[]                = [$options];
 
         // Ensure that "text time" command displays custom output options
         $options               = new Options();
         $options->options      = ['-d' => 1, '-o' => 'test.yml'];
-        $options->input        = "TestBundle:User";
+        $options->input        = ['TestBundle:User'];
         $options->displayRegex = '~-d.*-o~';
         $data[]                = [$options];
 
         // Depth and output location are at default so the "next time" command should not display those options
         $options                 = new Options();
-        $options->input          = "TestBundle:User";
+        $options->input          = ['TestBundle:User'];
         $options->noDisplayRegex = '~-d|-o~';
         $data[]                  = [$options];
 
         // Ensure duplicate configuration doesn't result in duplicate selection
         $options               = new Options();
-        $options->input        = "TestBundle:User\n\n\nTestBundle:User";
+        $options->input        = ['TestBundle:User', '', '', 'TestBundle:User'];
         $options->displayRegex = '~--entities="\[\'TestBundle:User\', all\]"~';
         $data[]                = [$options];
 
@@ -181,14 +178,14 @@ class GenerateFixturesCommandTest extends KernelTestCase
         $fg->method('generateYaml')
             ->with($this->anything(), $this->callback(
                 function (FixtureGenerationContext $context) use ($post1, $post2) {
-                    return $context->getPersistedObjectConstraints()->checkValid($post1) == true
-                    && $context->getPersistedObjectConstraints()->checkValid($post2) == false
-                    && $context->getMaximumRecursion() == 100;
+                    return $context->getPersistedObjectConstraints()->checkValid($post1) === true
+                    && $context->getPersistedObjectConstraints()->checkValid($post2) === false
+                    && $context->getMaximumRecursion() === 100;
                 }
             ));
         $options            = new Options();
         $options->generator = $fg;
-        $options->input     = "TestBundle:Post\nid\n\nyes";
+        $options->input     = ['TestBundle:Post', 'id', '', 'yes'];
         $options->entities  = $entities;
         $options->options   = ['-d' => 100];
         $data[]             = [$options];
@@ -197,7 +194,7 @@ class GenerateFixturesCommandTest extends KernelTestCase
         /** TESTS WITH ERROR OUTPUT **/
         // Attempt not to select anything
         $options               = new Options();
-        $options->input        = "\nTestBundle:User";
+        $options->input        = ['', 'TestBundle:User'];
         $options->displayRegex = '~no entities are selected for fixture generation~i';
         $data[]                = [$options];
 
@@ -219,7 +216,7 @@ class GenerateFixturesCommandTest extends KernelTestCase
         $options               = new Options();
         $options->generator    = $fg;
         $options->displayRegex = '~no result returned~i';
-        $options->input        = "TestBundle:Post\nid\n3";
+        $options->input        = ['TestBundle:Post', 'id', '3'];
         $data[]                = [$options];
 
         // Attempt to save to an invalid location
@@ -261,7 +258,7 @@ class GenerateFixturesCommandTest extends KernelTestCase
         // Invalid entity name
         $options               = new Options();
         $options->displayRegex = '~Unable to fetch entity information for "badEntity"~';
-        $options->input        = "badEntity\nTestBundle:Post";
+        $options->input        = ['badEntity', 'TestBundle:Post'];
         $data[]                = [$options];
 
         // Invalid selection type
@@ -279,19 +276,18 @@ class GenerateFixturesCommandTest extends KernelTestCase
         return $data;
     }
 
-    private function getOutputFromCommandForInput($input, FixtureGenerator $fixtureGenerator, Filesystem $filesystem, array $options = [])
+    private function getOutputFromCommandForInput(Options $options) //$input, FixtureGenerator $fixtureGenerator, Filesystem $filesystem, array $options = [])
     {
-        $generateFixturesCommand = new GenerateFixturesCommand($this->doctrine, static::$kernel, $fixtureGenerator, $filesystem);
+        $generateFixturesCommand = new GenerateFixturesCommand($this->doctrine, static::$kernel, $options->generator, $options->filesystem);
 
         $application = new \Symfony\Component\Console\Application();
         $application->add($generateFixturesCommand);
 
         $command = $application->find('generate:fixtures');
-        $helper  = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream($input));
 
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array_merge(['command' => $command->getName()], $options));
+        $commandTester->setInputs($options->input);
+        $commandTester->execute(array_merge(['command' => $command->getName()], $options->options));
 
         return $commandTester->getDisplay(true);
     }
@@ -321,15 +317,6 @@ class GenerateFixturesCommandTest extends KernelTestCase
             ->will($this->returnValue('test'));
 
         return $fixtureGenerator;
-    }
-
-    private function getInputStream($input)
-    {
-        $stream = fopen('php://memory', 'r+', false);
-        fputs($stream, $input);
-        rewind($stream);
-
-        return $stream;
     }
 
     private function getTestEntities()
@@ -391,9 +378,11 @@ class Options
     public $exceptionRegex = false;
     public $displayRegex = false;
     public $noDisplayRegex = false;
-    public $input = '';
+    public $input = [];
     public $options = [];
+    /** @var bool|FixtureGenerator */
     public $generator = false;
+    /** @var bool|Filesystem */
     public $filesystem = false;
     public $entities = false;
 }
