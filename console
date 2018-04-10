@@ -10,6 +10,7 @@ require_once __DIR__ . '/tests/Trappar/AliceGeneratorBundle/SymfonyApp/AppKernel
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\AppKernel;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');

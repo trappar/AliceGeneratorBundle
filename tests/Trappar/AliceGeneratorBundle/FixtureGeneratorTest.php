@@ -3,6 +3,7 @@
 namespace Trappar\AliceGeneratorBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Trappar\AliceGenerator\FixtureGenerator;
 use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\ObjectHandler\CustomHandler;
 
 class FixtureGeneratorTests extends KernelTestCase
@@ -10,7 +11,7 @@ class FixtureGeneratorTests extends KernelTestCase
     public function test()
     {
         static::bootKernel();
-        $fg = static::$kernel->getContainer()->get('trappar_alice_generator.fixture_generator');
+        $fg = static::$kernel->getContainer()->get(FixtureGenerator::class);
 
         $valueVisitor = $this->readAttribute($fg, 'valueVisitor');
 

@@ -72,6 +72,9 @@ class GenerateFixturesCommandTest extends KernelTestCase
         if ($options->noDisplayRegex) {
             $this->assertNotRegExp($options->noDisplayRegex, $display);
         }
+        if (!$options->anyAssertionUsed()) {
+            $this->assertRegExp('~Written successfully with no errors\!~', $display);
+        }
     }
 
     public function getInteractiveCommandData()
@@ -395,4 +398,9 @@ class Options
     /** @var bool|Filesystem */
     public $filesystem = false;
     public $entities = false;
+
+    public function anyAssertionUsed()
+    {
+        return $this->exception || $this->exceptionRegex || $this->displayRegex || $this->noDisplayRegex;
+    }
 }

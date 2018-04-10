@@ -4,6 +4,8 @@ namespace Trappar\AliceGeneratorBundle\Tests\DependencyInjection;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Trappar\AliceGenerator\Exception\RuntimeException;
+use Trappar\AliceGenerator\ValueVisitor;
+use Trappar\AliceGenerator\YamlWriter;
 use Trappar\AliceGeneratorBundle\DependencyInjection\TrapparAliceGeneratorExtension;
 
 class TrapparAliceGeneratorExtensionTest extends AbstractExtensionTestCase
@@ -91,12 +93,12 @@ class TrapparAliceGeneratorExtensionTest extends AbstractExtensionTestCase
         ]);
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(
-            'trappar_alice_generator.yaml_writer',
+            YamlWriter::class,
             0,
             3
         );
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(
-            'trappar_alice_generator.yaml_writer',
+            YamlWriter::class,
             1,
             1
         );
@@ -107,14 +109,14 @@ class TrapparAliceGeneratorExtensionTest extends AbstractExtensionTestCase
         $this->setBundles();
         $this->load();
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(
-            'trappar_alice_generator.value_visitor',
+            ValueVisitor::class,
             4,
             true
         );
 
         $this->load(['strictTypeChecking' => false]);
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(
-            'trappar_alice_generator.value_visitor',
+            ValueVisitor::class,
             4,
             false
         );

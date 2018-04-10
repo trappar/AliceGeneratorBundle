@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.0
+* Compatibility with AliceGenerator v0.3.0
+* Changed service names to use fully qualified class names. (trappar_alice_generator.fixture_generator -> Trappar\AliceGenerator\FixtureGenerator)
+
 ## Version 1.1
 * Compatibility with AliceGenerator v0.2.0
 * Added option to specify which Doctrine entity manager to use in Generate Fixtures Command

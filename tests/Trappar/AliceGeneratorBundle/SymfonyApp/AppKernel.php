@@ -1,17 +1,23 @@
 <?php
 
+namespace Trappar\AliceGeneratorBundle\Tests\SymfonyApp;
+
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\TestBundle;
+use Trappar\AliceGeneratorBundle\TrapparAliceGeneratorBundle;
 
 class AppKernel extends Kernel
 {
     public function registerBundles()
     {
         return [
-            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new Trappar\AliceGeneratorBundle\TrapparAliceGeneratorBundle(),
-            new Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\TestBundle(),
+            new FrameworkBundle(),
+            new DoctrineBundle(),
+            new TrapparAliceGeneratorBundle(),
+            new TestBundle()
         ];
     }
 

@@ -1,4 +1,3 @@
 services:
-    custom_object_handler:
-        class: Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\ObjectHandler\CustomHandler
+    Trappar\AliceGeneratorBundle\Tests\SymfonyApp\TestBundle\ObjectHandler\CustomHandler:
         tags: [ { name: trappar_alice_generator.object_handler } ]

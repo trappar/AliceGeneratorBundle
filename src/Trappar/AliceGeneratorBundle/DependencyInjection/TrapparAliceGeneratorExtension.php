@@ -7,6 +7,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Trappar\AliceGenerator\Exception\RuntimeException;
+use Trappar\AliceGenerator\ValueVisitor;
+use Trappar\AliceGenerator\YamlWriter;
 
 class TrapparAliceGeneratorExtension extends ConfigurableExtension
 {
@@ -15,6 +17,7 @@ class TrapparAliceGeneratorExtension extends ConfigurableExtension
      *
      * @param array            $config
      * @param ContainerBuilder $container
+     * @throws \ReflectionException
      */
     public function loadInternal(array $config, ContainerBuilder $container)
     {
@@ -53,12 +56,12 @@ class TrapparAliceGeneratorExtension extends ConfigurableExtension
             ->addArgument($directories);
 
         $container
-            ->getDefinition('trappar_alice_generator.yaml_writer')
+            ->getDefinition(YamlWriter::class)
             ->addArgument($config['yaml']['inline'])
             ->addArgument($config['yaml']['indent']);
 
         $container
-            ->getDefinition('trappar_alice_generator.value_visitor')
+            ->getDefinition(ValueVisitor::class)
             ->addArgument($config['strictTypeChecking']);
     }
 

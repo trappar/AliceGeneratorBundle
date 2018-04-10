@@ -6,14 +6,16 @@ use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Trappar\AliceGenerator\Metadata\Resolver\MetadataResolver;
+use Trappar\AliceGenerator\ObjectHandlerRegistry;
 use Trappar\AliceGeneratorBundle\DependencyInjection\Compiler\CompilerPass;
 
 class CompilerPassTest extends AbstractCompilerPassTestCase
 {
     public function testProcess()
     {
-        $this->setDefinition('trappar_alice_generator.metadata.resolver', new Definition());
-        $this->setDefinition('trappar_alice_generator.object_handler_registry', new Definition());
+        $this->setDefinition(MetadataResolver::class, new Definition());
+        $this->setDefinition(ObjectHandlerRegistry::class, new Definition());
 
         $testFakerResolver = new Definition();
         $testFakerResolver->addTag('trappar_alice_generator.faker_resolver');
@@ -26,13 +28,13 @@ class CompilerPassTest extends AbstractCompilerPassTestCase
         $this->compile();
 
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            'trappar_alice_generator.metadata.resolver',
+            MetadataResolver::class,
             'addFakerResolvers',
             [[new Reference('custom_faker_resolver')]]
         );
 
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
-            'trappar_alice_generator.object_handler_registry',
+            ObjectHandlerRegistry::class,
             'registerHandlers',
             [[new Reference('custom_object_handler')]]
         );

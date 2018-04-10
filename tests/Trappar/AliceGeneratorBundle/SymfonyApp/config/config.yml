@@ -3,7 +3,6 @@ imports:
 
 framework:
     secret: test
-    form: ~
     validation:
         enabled: true
         enable_annotations: true
