@@ -5,7 +5,7 @@ namespace Trappar\AliceGeneratorBundle\Command;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Yaml\Yaml;
 use Trappar\AliceGenerator\FixtureGenerationContext;
 use Trappar\AliceGenerator\FixtureGenerator;
 
-class GenerateFixturesCommand extends ContainerAwareCommand
+class GenerateFixturesCommand extends Command
 {
     const DEFAULT_DEPTH = 5;
     const DEFAULT_OUTPUT_PATH_SUFFIX = '/DataFixtures/ORM/generated.yml';

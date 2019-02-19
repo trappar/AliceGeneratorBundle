@@ -2,5 +2,4 @@ vendor/*
 composer.lock
 tests/Trappar/AliceGeneratorBundle/SymfonyApp/cache
 tests/Trappar/AliceGeneratorBundle/SymfonyApp/logs
-phpunit.xml
 generated.yml

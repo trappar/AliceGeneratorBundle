@@ -12,9 +12,14 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $tb = new TreeBuilder();
+        $tb = new TreeBuilder('trappar_alice_generator');
 
-        $root = $tb->root('trappar_alice_generator');
+        if (method_exists($tb, 'getRootNode')) {
+            $root = $tb->getRootNode();
+        } else {
+            // BC layer for symfony/config 4.1 and older
+            $root = $tb->root('trappar_alice_generator');
+        }
 
         $root->children()
             ->arrayNode('metadata')

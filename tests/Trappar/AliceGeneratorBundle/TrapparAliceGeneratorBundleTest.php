@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Trappar\AliceGeneratorBundle\DependencyInjection\Compiler\CompilerPass;
-use Trappar\AliceGeneratorBundle\DependencyInjection\Compiler\ProviderCompilerPass;
 use Trappar\AliceGeneratorBundle\TrapparAliceGeneratorBundle;
 
 class TrapparAliceGeneratorBundleTest extends TestCase
