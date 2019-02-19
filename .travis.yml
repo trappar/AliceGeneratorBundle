@@ -25,6 +25,7 @@ before_install:
   # Don't run with xdebug, and don't error when xdebug isn't installed
   - |
     phpenv config-rm xdebug.ini || true
+    phpenv config-add travis.php.ini
     if [ "$SYMFONY_VERSION" != "" ]; then
       composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update
     fi
