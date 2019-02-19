@@ -1,5 +1,8 @@
 # Changelog
 
+## Versopm 2.0.1
+* Compatibility with AliceGenerator v0.3.1
+
 ## Version 2.0.0
 * Compatibility with AliceGenerator v0.3.0
 * Compatibility with Symfony 4

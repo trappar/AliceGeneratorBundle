@@ -110,14 +110,14 @@ class TrapparAliceGeneratorExtensionTest extends AbstractExtensionTestCase
         $this->load();
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(
             ValueVisitor::class,
-            4,
+            5,
             true
         );
 
         $this->load(['strictTypeChecking' => false]);
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(
             ValueVisitor::class,
-            4,
+            5,
             false
         );
     }

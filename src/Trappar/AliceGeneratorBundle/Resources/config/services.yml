@@ -83,6 +83,11 @@ services:
     Trappar\AliceGenerator\YamlWriter:
         public: false
 
+    # Property Namer
+    Trappar\AliceGenerator\PropertyNamer\PropertyNamer:
+        public: false
+    Trappar\AliceGenerator\PropertyNamer\PropertyNamerInterface: '@Trappar\AliceGenerator\PropertyNamer\PropertyNamer'
+
     # Fixture Generator
     Trappar\AliceGenerator\ValueVisitor:
         public: false
@@ -91,6 +96,7 @@ services:
             - '@Trappar\AliceGeneratorBundle\Persister\DoctrinePersister'
             - '@Trappar\AliceGenerator\Metadata\Resolver\MetadataResolver'
             - '@Trappar\AliceGenerator\ObjectHandlerRegistry'
+            - '@Trappar\AliceGenerator\PropertyNamer\PropertyNamerInterface'
 
 
     Trappar\AliceGenerator\FixtureGenerator:
@@ -98,6 +104,7 @@ services:
         arguments:
             - '@Trappar\AliceGenerator\ValueVisitor'
             - '@Trappar\AliceGenerator\YamlWriter'
+            -
 
     # Command
     trappar_alice_generator.command.generate_fixtures:
