@@ -13,7 +13,7 @@ services:
         arguments: ['@annotation_reader']
 
     trappar_alice_generator.metadata.chain_driver:
-        public: false
+        public: public
         class: Metadata\Driver\DriverChain
         arguments:
             - ['@Trappar\AliceGenerator\Metadata\Driver\YamlDriver', '@Trappar\AliceGenerator\Metadata\Driver\AnnotationDriver']
