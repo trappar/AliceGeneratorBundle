@@ -13,7 +13,7 @@
     "require": {
         "php": "^7.1",
         "trappar/alice-generator": "^0.3",
-        "doctrine/orm": "~2.4",
+        "doctrine/orm": "^2.6",
         "doctrine/doctrine-bundle": "^2.0",
         "symfony/finder": "^3.0|^4.0",
         "symfony/validator": "^3.0|^4.0",
